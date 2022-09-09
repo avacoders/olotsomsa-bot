@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('email')->nullable()->change();
-            $table->bigInteger('telegram_id')->nullable()->change();
+            $table->bigInteger('telegram_id')->nullable();
         });
     }
 
@@ -29,7 +29,6 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('email')->nullable();
             $table->dropColumn('telegram_id');
-
         });
     }
 };
