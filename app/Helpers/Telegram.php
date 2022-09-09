@@ -1483,6 +1483,7 @@ class Telegram
     {
         $this->setStatus((int)$user->telegram_id, Status::NAME);
         $this->sendMessage($user->telegram_id, lang('uz', 'hi'));
+        Log::debug($user);
     }
 
 
