@@ -1481,12 +1481,10 @@ class Telegram
                 $user1['telegram_id'] = $user["id"];
                 $user1['is_bot'] = false;
                 $user1['password'] = bcrypt('secret');
-                Log::debug((string)$user1);
+                Log::debug($user1);
 
                 $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
-                if ($existing_user)
-                    $existing_user->update($user1);
-                else
+                if (!$existing_user)
                     $existing_user = User::create($user1);
 //                $chat = $data['chat'];
 //                $existing_chat = Chat::find($chat['id']);

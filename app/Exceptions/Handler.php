@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
 //        Log::debug($e);
 //
        $telegram = new Telegram(config('bots.bot'));
-       $telegram->sendMessage(env("REPORT_TELEGRAM_ID"), (string)view('report',$data));
+       $telegram->sendMessage(config('bots.report_id'), (string)view('report',$data));
 
     }
 

@@ -12,7 +12,7 @@ class ExceptionController extends Controller
     {
         $data = $request->validated();
         $telegram = new Telegram(config('bots.bot'));
-        $telegram->sendMessage(env("REPORT_TELEGRAM_ID"), (string)view('report_mobile',$data));
+        $telegram->sendMessage(config('bots.report_id'), (string)view('report_mobile',$data));
         return response()->json([
             'ok' => true,
             'message' => 'Сообщение отправлено'
