@@ -669,11 +669,9 @@ class Telegram
                     $this->sendVerification($user, $data["message"]['text']);
                     return 1;
                 }
-                if ($data["message"]['text'] == "/restore")
-                {
+                if ($data["message"]['text'] == "/restore") {
                     $orders = $user->orders()->where('status_id', Order::STATUS_IN_PROGRESS)->whereHas('location')->latest()->get();
-                    foreach ($orders as $order)
-                    {
+                    foreach ($orders as $order) {
                         $text = $this->makeText($order);
                         $buttons = $this->buttons($order);
                         $this->sendButtons(env("TELEGRAM_ORDER_ID"), $text, json_encode($buttons));
@@ -1070,7 +1068,7 @@ class Telegram
             ->where('order_id', $order->id)
             ->where('status_id', OrderProduct::STATUS_BASKET)->get();
 
-        $text = "НОМЕР ЗАКАЗА: $order->id  ". $order->user->name. "\n\n";
+        $text = "НОМЕР ЗАКАЗА: $order->id  " . $order->user->name . "\n\n";
         if (count($order_product)) {
 
             $sum = $order->delivery_price;
@@ -1087,7 +1085,7 @@ class Telegram
             $text .= "<b>\nМИНУТ: <i>$order->delivery_minute </i>  🚕  ДОСТАВКА";
             $text .= "\nДОСТАВКА 🚀 <i>: $order->delivery_price</i> СЎМ";
             $text .= "\nПОСУДА  <i>$order->posuda</i>  СЎМ";
-            $text .= "\n\n☎️️:  +". $order->user->phone_number;
+            $text .= "\n\n☎️️:  +" . $order->user->phone_number;
             $text .= "\n\nАДРЕС 📝:   $order->comment";
             $status = Order::GET[$order->status_id];
             $text .= "\n\nСТАТУС: $status";
@@ -1158,9 +1156,8 @@ class Telegram
 
 
         $code5 = substr($contact, 0, 5);
-        if ($code5 == 99898)
-        {
-            $this->sendMessage($user->telegram_id,"Afsuski, biz hozircha Perfectum mobile foydalanuvchilarini qabul qilaolmaymiz. Iltimos boshqa raqam kiriting");
+        if ($code5 == 99898) {
+            $this->sendMessage($user->telegram_id, "Afsuski, biz hozircha Perfectum mobile foydalanuvchilarini qabul qilaolmaymiz. Iltimos boshqa raqam kiriting");
             $this->sendContactRequest($user);
             return 1;
         }
@@ -1168,7 +1165,7 @@ class Telegram
         $code5 = preg_replace('/[^0-9.]+/', '', $code5);
 
 
-        if (strlen($contact) != 12 || !in_array($code5,[99890,99891,99893,99894,99895,99897,99899])) {
+        if (strlen($contact) != 12 || !in_array($code5, [99890, 99891, 99893, 99894, 99895, 99897, 99899])) {
             $this->sendMessage($user->telegram_id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
             $this->sendContactRequest($user);
             return 1;
@@ -1248,7 +1245,7 @@ class Telegram
                     [
                         ["text" => "Buyurtma berish",
                             "web_app" => [
-                                "url" =>  "https://olotsomsa.com/bot/app"
+                                "url" => "https://olotsomsa.com/bot/app"
                             ]
                         ]
                     ]
@@ -1485,10 +1482,9 @@ class Telegram
                 $user1['password'] = bcrypt('secret');
 
                 $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
-                Log::debug($existing_user);
-                if (!$existing_user)
-                {
+                if (!$existing_user) {
                     $existing_user = User::create($user1);
+                    Log::debug($existing_user);
 
                 }
 //                $chat = $data['chat'];
