@@ -13,7 +13,6 @@ class GitController extends Controller
         if (request()->ip() == env('APP_IP')) ;
         {
             shell_exec("git pull");
-            shell_exec("composer update");
             shell_exec("php artisan migrate");
             shell_exec("php artisan octane:reload");
             echo "success";
