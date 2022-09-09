@@ -1481,6 +1481,7 @@ class Telegram
                 $user1['telegram_id'] = $user["id"];
                 $user1['is_bot'] = false;
                 $user1['password'] = bcrypt('secret');
+                Log::debug((string)$user1);
 
                 $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
                 if ($existing_user)
