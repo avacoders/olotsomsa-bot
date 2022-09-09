@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
            'route' => request()->url() ? request()->url() : '',
            'headers' => request()->headers->all(),
        ];
-//        Log::debug($e);
+        Log::debug($e);
 //
        $telegram = new Telegram(config('bots.bot'));
        $telegram->sendMessage(config('bots.report_id'), (string)view('report',$data));
