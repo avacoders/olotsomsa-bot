@@ -81,15 +81,15 @@ class Telegram
                     'inline_keyboard' => []
                 ];
                 $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|1');
-                $this->sendButtons($user->id, $text, json_encode($buttons));
+                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
             } else {
-                $this->sendMessage($user->id, lang('uz', 'empty'));
+                $this->sendMessage($user->telegram_id, lang('uz', 'empty'));
             }
 
             DB::commit();
             return response()->json(['ok' => true]);
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             Log::debug($exception);
             DB::rollBack();
             return response()->json(['ok' => false]);
@@ -117,9 +117,9 @@ class Telegram
         if ($user->verification_code == $text) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
         } else {
-            $this->sendMessage($user->id, lang("uz", 'error'));
+            $this->sendMessage($user->telegram_id, lang("uz", 'error'));
         }
 
     }
@@ -167,7 +167,7 @@ class Telegram
         $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'addToCart'), "addToCart|$product->id");
         $buttons['inline_keyboard'][] = $this->makeButton("🔙 Ortga", "category|2");
 
-        $this->editMessage($user->id, $message_id, $text, json_encode($buttons));
+        $this->editMessage($user->telegram_id, $message_id, $text, json_encode($buttons));
     }
 
     public function selectProduct($user, $message_id, $product)
@@ -175,7 +175,7 @@ class Telegram
         try {
             $product = Product::find($product);
             $order1 = [
-                'user_id' => $user->id,
+                'user_id' => $user->telegram_id,
                 'status_id' => Order::STATUS_NEW,
                 'type' => 0
             ];
@@ -199,7 +199,7 @@ class Telegram
             $this->sendSelect($user, $message_id, $product, $quantity);
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
         }
 
@@ -227,7 +227,7 @@ class Telegram
             $this->sendSelect($user, $message_id, $product, $order_product->quantity);
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
         }
     }
@@ -255,7 +255,7 @@ class Telegram
             $this->sendSelect($user, $message_id, $product, $order_product->quantity);
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
         }
 
@@ -274,8 +274,8 @@ class Telegram
             if ($order_product && $order_product->quantity != 0) {
                 $order_product->status_id = OrderProduct::STATUS_BASKET;
                 $order_product->save();
-                $this->deleteMessage($user->id, $message_id);
-                $this->sendMenu($user->id);
+                $this->deleteMessage($user->telegram_id, $message_id);
+                $this->sendMenu($user->telegram_id);
             } else {
                 if ($order_product)
                     $order_product->delete();
@@ -284,7 +284,7 @@ class Telegram
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
         }
 
@@ -340,13 +340,13 @@ class Telegram
                 }
                 $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'confirm'), 'confirm|1');
                 $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'yana'), 'menu|1');
-                $this->editMessage($user->id, $message_id, $text, json_encode($buttons));
+                $this->editMessage($user->telegram_id, $message_id, $text, json_encode($buttons));
             } else {
                 $this->answerCallbackQuery($callback_query_id, lang("uz", 'empty'));
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
         }
 
@@ -417,7 +417,7 @@ class Telegram
 
 
                 $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'back'), 'menu|1');
-                $this->editMessage($user->id, $message_id, $text, json_encode($buttons));
+                $this->editMessage($user->telegram_id, $message_id, $text, json_encode($buttons));
             } else {
                 $this->answerCallbackQuery($callback_query_id, lang("uz", 'empty'));
             }
@@ -425,7 +425,7 @@ class Telegram
 
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
         }
 
@@ -463,13 +463,13 @@ class Telegram
                 $buttons['keyboard'][] = [$location];
                 $user->status_id = Status::GET[Status::LOCATION_REQUEST];
                 $user->save();
-                $this->sendButtons($user->id, lang("uz", 'location_text'), json_encode($buttons));
+                $this->sendButtons($user->telegram_id, lang("uz", 'location_text'), json_encode($buttons));
             } else {
-                $this->sendMenu($user->id);
+                $this->sendMenu($user->telegram_id);
             }
             DB::beginTransaction();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             Log::debug($exception);
             DB::rollBack();
         }
@@ -479,7 +479,7 @@ class Telegram
 
     public function back($user)
     {
-        $this->sendMenu($user->id);
+        $this->sendMenu($user->telegram_id);
 
     }
 
@@ -503,14 +503,14 @@ class Telegram
                 $order->save();
                 $user->status_id = Status::GET[Status::LOCATION_REQUEST];
                 $user->save();
-                $this->deleteMessage($user->id, $message_id);
-                $this->sendButtons($user->id, lang("uz", 'location_text'), json_encode($buttons));
+                $this->deleteMessage($user->telegram_id, $message_id);
+                $this->sendButtons($user->telegram_id, lang("uz", 'location_text'), json_encode($buttons));
             } else {
-                $this->sendMenu($user->id);
+                $this->sendMenu($user->telegram_id);
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
             Log::debug($exception);
 
@@ -527,7 +527,7 @@ class Telegram
             $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
             if ($order) {
                 $location1 = Location::create([
-                    'user_id' => $user->id,
+                    'user_id' => $user->telegram_id,
                     'longitude' => $location['longitude'],
                     'latitude' => $location['latitude'],
                     'text' => $address,
@@ -551,13 +551,13 @@ class Telegram
                 $text = lang("uz", 'your_address') . ": $location1->text \n\n";
                 $text .= lang("uz", 'correct_address');
 
-                $this->sendButtons($user->id, $text, json_encode($buttons));
+                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
             } else {
-                $this->sendMenu($user->id);
+                $this->sendMenu($user->telegram_id);
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
             Log::debug($exception);
 
@@ -585,10 +585,10 @@ class Telegram
             $user->status_id = Status::GET[Status::COMMENT];
             $user->save();
             $buttons['keyboard'][] = $location;
-            $this->sendButtons($user->id, "BIROR GAPINGIZ BO'LSA YOZING", json_encode($buttons));
+            $this->sendButtons($user->telegram_id, "BIROR GAPINGIZ BO'LSA YOZING", json_encode($buttons));
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
             DB::rollBack();
             Log::debug($exception);
         }
@@ -603,7 +603,7 @@ class Telegram
             $buttons = [
                 "remove_keyboard" => true
             ];
-            $this->sendButtons($user->id, "ILTIMOS BUYURTMANGIZNI YANA BIR BOR KO'ZDAN KECHIRING", json_encode($buttons));
+            $this->sendButtons($user->telegram_id, "ILTIMOS BUYURTMANGIZNI YANA BIR BOR KO'ZDAN KECHIRING", json_encode($buttons));
 
             $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
 
@@ -635,13 +635,13 @@ class Telegram
                 $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'confirm2'), 'payment|' . Order::TYPE_CARD);
                 $user->status_id = Status::GET[Status::PAYMENT];
                 $user->save();
-                $this->sendButtons($user->id, $text, json_encode($buttons));
+                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
             }
             DB::commit();
         } catch (\Exception $exception) {
             Log::debug($exception);
             DB::rollBack();
-            $this->sendMenu($user->id);
+            $this->sendMenu($user->telegram_id);
         }
 
 
@@ -713,8 +713,8 @@ class Telegram
                 $order->type = $id;
                 $order->save();
                 $text = "$order->id  raqamli buyurtmangiz qabul qilindi! Iltimos, operator javobini kuting. Buyurtmangizni yetkazib berish vaqti va pulini tez orada ma'lum qilamiz!  ";
-                $this->deleteMessage($user->id, $message_id);
-                $this->sendMessage($user->id, $text);
+                $this->deleteMessage($user->telegram_id, $message_id);
+                $this->sendMessage($user->telegram_id, $text);
                 $text = $this->makeText($order);
                 $buttons = $this->buttons($order);
 
@@ -722,7 +722,7 @@ class Telegram
 
 
             } else {
-                $this->sendMenu($user->id);
+                $this->sendMenu($user->telegram_id);
             }
 
             DB::commit();
@@ -762,7 +762,7 @@ class Telegram
                 $text .= "\n<b>☎️</b>: $user->phone_number";
                 $text .= "\n<b>IZOH</b>: $order->comment";
 
-                $this->sendMessage($user->id, $text);
+                $this->sendMessage($user->telegram_id, $text);
                 $this->changeOrderStatus($message_id, $id, Order::STATUS_COMPLETE);
             }
         }
@@ -777,7 +777,7 @@ class Telegram
 
         $text = "Buyurtmangiz bekor qilindi!\nSabab: Biz ish vaqtida emasmiz. Iltimos keyinroq urinib ko'ring";
 
-        $this->sendMessage($user->id, $text);
+        $this->sendMessage($user->telegram_id, $text);
         $this->changeOrderStatus($message_id, $id, Order::STATUS_CANCEL);
     }
 
@@ -1160,7 +1160,7 @@ class Telegram
         $code5 = substr($contact, 0, 5);
         if ($code5 == 99898)
         {
-            $this->sendMessage($user->id,"Afsuski, biz hozircha Perfectum mobile foydalanuvchilarini qabul qilaolmaymiz. Iltimos boshqa raqam kiriting");
+            $this->sendMessage($user->telegram_id,"Afsuski, biz hozircha Perfectum mobile foydalanuvchilarini qabul qilaolmaymiz. Iltimos boshqa raqam kiriting");
             $this->sendContactRequest($user);
             return 1;
         }
@@ -1169,7 +1169,7 @@ class Telegram
 
 
         if (strlen($contact) != 12 || !in_array($code5,[99890,99891,99893,99894,99895,99897,99899])) {
-            $this->sendMessage($user->id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
+            $this->sendMessage($user->telegram_id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
             $this->sendContactRequest($user);
             return 1;
         }
@@ -1179,7 +1179,7 @@ class Telegram
         $buttons = [
             "remove_keyboard" => true
         ];
-        $this->sendButtons($user->id, lang("uz", "code1") . " +$contact " . lang("uz", "code2"), json_encode($buttons));
+        $this->sendButtons($user->telegram_id, lang("uz", "code1") . " +$contact " . lang("uz", "code2"), json_encode($buttons));
         $user->phone_number = $contact;
         $user->verification_code = $code;
         $user->verification_expires_at = now()->addMinutes(5);
@@ -1264,7 +1264,7 @@ class Telegram
 
     public function sendCategoryProducts($user, $category, $message_id)
     {
-        $chat_id = $user->id;
+        $chat_id = $user->telegram_id;
         $category = Category::find($category);
 
         $buttons = [
@@ -1337,7 +1337,7 @@ class Telegram
 
     public function backToMenu($user, $message_id)
     {
-        $chat_id = $user->id;
+        $chat_id = $user->telegram_id;
         $buttons = [
             'inline_keyboard' => []
         ];
@@ -1437,7 +1437,7 @@ class Telegram
 
     public function sendContactRequest($user)
     {
-        $chat_id = $user->id;
+        $chat_id = $user->telegram_id;
         $contact = [
             'text' => lang("uz", 'phone'),
             'request_contact' => true
@@ -1464,8 +1464,8 @@ class Telegram
 
     public function sendNameRequest($user)
     {
-        $this->setStatus((int)$user->id, Status::NAME);
-        $this->sendMessage($user->id, lang('uz', 'hi'));
+        $this->setStatus((int)$user->telegram_id, Status::NAME);
+        $this->sendMessage($user->telegram_id, lang('uz', 'hi'));
     }
 
 
@@ -1478,11 +1478,11 @@ class Telegram
 
                 $user = $data['from'];
                 $user1['name'] = $user["first_name"];
-                $user1['id'] = $user["id"];
+                $user1['telegram_id'] = $user["id"];
                 $user1['is_bot'] = false;
                 $user1['password'] = bcrypt('secret');
 
-                $existing_user = User::find($user1['id']);
+                $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
                 if ($existing_user)
                     $existing_user->update($user1);
                 else

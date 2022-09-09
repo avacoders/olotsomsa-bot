@@ -9,7 +9,7 @@
 
         <div class="card-body">
 
-            <form action="{{ route('user.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('user.update', $user->telegram_id) }}" method="POST" enctype="multipart/form-data">
                 @method('put')
                 @csrf
                 <div class="form-row">

@@ -56,7 +56,7 @@
                 <tbody>
                 @foreach($users as $user)
                     <tr>
-                        <td>{{ $user->id }}</td>
+                        <td>{{ $user->telegram_id }}</td>
                         <td>{{ $user->name }} @if($user->status) <div class="mb-2 mr-2 badge badge-pill badge-success">Yangi</div> @endif</td>
                         <td>{{ $user->username }}</td>
                         <td>{{ $user->phone_number }}</td>
@@ -64,10 +64,10 @@
                         <td width="250px">
                             <div class="d-flex justify-content-between">
 {{--                                <div>--}}
-{{--                                    <a href="{{ route('user.edit', $user->id) }}" class="btn btn-primary">O'zgaritirish</a>--}}
+{{--                                    <a href="{{ route('user.edit', $user->telegram_id) }}" class="btn btn-primary">O'zgaritirish</a>--}}
 {{--                                </div>--}}
                                 <div>
-                                    <form action="{{ route('user.destroy', $user->id) }}" method="post">
+                                    <form action="{{ route('user.destroy', $user->telegram_id) }}" method="post">
                                         @csrf
                                         @method('delete')
                                         <input type="submit" class="btn btn-danger" value="O'chirish">
