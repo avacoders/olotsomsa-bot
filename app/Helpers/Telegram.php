@@ -36,6 +36,25 @@ class Telegram
         $this->bot = $bot;
     }
 
+    public function changeLang($chat_id){
+        $user = User::where('telegram_id',$chat_id)->first();
+        $text = "Tilni tanlang\nВыберите язык";
+        $buttons = [
+            [
+                [
+                    "text" => "O'zbekcha",
+                    "callback_data" => "uz"
+                ],
+                [
+                    "text" => "Русский",
+                    "callback_data" => "ru"
+                ]
+            ]
+        ];
+        $this->sendButtons($chat_id,$text,json_decode($buttons));
+    }
+
+
     public function sendConfirmation(Request $request)
     {
         DB::beginTransaction();

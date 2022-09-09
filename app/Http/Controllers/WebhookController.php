@@ -47,7 +47,7 @@ class WebhookController extends Controller
                 if (!$this->telegram->checkNewUser($chat_id))
                     $this->telegram->sendNameRequest($user);
                 else
-                    $this->telegram->sendMenu($chat_id);
+                    $this->telegram->changeLang($chat_id);
                 return 1;
             }
 
