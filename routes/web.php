@@ -65,7 +65,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function (){
 
 Auth::routes(['register' => false]);
 
-Route::post('/pull', [GitController::class,'index']);
+    Route::post('/pull', [GitController::class,'index']);
 
 
 Route::group(['prefix' => 'bot'], function () {
