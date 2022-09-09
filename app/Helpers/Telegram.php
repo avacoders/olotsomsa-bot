@@ -40,7 +40,7 @@ class Telegram
     {
         DB::beginTransaction();
 
-        $user = User::find($request->user['id']);
+        $user = User::where('telegram_id',$request->user['id']);
 
         try {
             $order = Order::create([
@@ -1226,7 +1226,7 @@ class Telegram
 
     public function checkNewUser($user_id)
     {
-        $user = User::find($user_id);
+        $user = User::where('telegram_id',$user_id);
 
 
         return $user && $user->phone_number;
@@ -1236,7 +1236,7 @@ class Telegram
     public function sendMenu($chat_id)
     {
 
-        $user = User::find($chat_id);
+        $user = User::where('telegram_id',$chat_id);
         if ($user->status_id >= 4) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
@@ -1453,7 +1453,7 @@ class Telegram
 
     public function setStatus($chat_id, $status)
     {
-        $user = User::find($chat_id);
+        $user = User::where('telegram_id',$chat_id);
         $user->status_id = Status::GET[$status];
         $user->save();
     }
@@ -1484,7 +1484,6 @@ class Telegram
                 $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
                 if (!$existing_user) {
                     $existing_user = User::create($user1);
-                    Log::debug($existing_user);
 
                 }
 //                $chat = $data['chat'];
@@ -1504,7 +1503,7 @@ class Telegram
             (\Exception $exception) {
                 Log::debug($exception);
                 DB::rollBack();
-                return User::find(1322193369);
+                return User::where('telegram_id',1322193369);
 
             }
         }
