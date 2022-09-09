@@ -71,7 +71,7 @@ Auth::routes(['register' => false]);
 Route::group(['prefix' => 'bot'], function () {
 
     Route::get("/setWebhook", function (){
-        $result = \Illuminate\Support\Facades\Http::get("https://api.telegram.org/bot".config('bots.bot')."/setWebhook?url=https://olotsomsa.com/bot/webhook");
+        $result = \Illuminate\Support\Facades\Http::get("https://api.telegram.org/bot".config('bots.bot')."/setWebhook?url=https://bot.olotsomsa.com/bot/webhook");
         dd($result->body());
     });
     Route::post('/webhook', [WebhookController::class,'index']);
