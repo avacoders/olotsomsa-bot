@@ -43,7 +43,7 @@ class WebhookController extends Controller
         if (isset($data['message']) && isset($data['message']['text'])) {
 
             if ($data['message']['text'] == "/start") {
-                if (!$this->telegram->checkNewUser($chat_id))
+                if ($user)
                     $this->telegram->sendMenu($user);
                 else
                     $this->telegram->setLang($data);
