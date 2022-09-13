@@ -14,7 +14,7 @@ class GitController extends Controller
         {
             shell_exec("git pull origin master");
             Artisan::call('optimize:clear');
-            Artisan::call('octane:reload');
+//            Artisan::call('octane:reload');
             echo "success";
         }
     }
