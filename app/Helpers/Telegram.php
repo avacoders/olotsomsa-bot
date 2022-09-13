@@ -61,7 +61,7 @@ class Telegram
 
     public function changeLang($user, $id)
     {
-        $user->lang = $id;
+        $user->language_code = $id;
         $user->save();
         $this->sendMenu($user);
     }
