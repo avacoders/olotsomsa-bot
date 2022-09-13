@@ -52,6 +52,7 @@ class Telegram
                 ]
             ]
         ];
+        Log::debug($user);
         $this->sendButtons($user->telegram_id,$text,json_encode($buttons));
     }
 
@@ -1252,7 +1253,6 @@ class Telegram
 
     public function sendButtons($chat_id, $message, $button)
     {
-        Log::debug($this->bot);
         $result = $this->http::post(self::url . $this->bot . '/sendMessage', [
             'chat_id' => $chat_id,
             'text' => $message,
