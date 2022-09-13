@@ -123,7 +123,7 @@ class WebhookController extends Controller
                 }
                 if($type == "lang")
                 {
-                    $this->telegram->changeLang($user, $id);
+                    $this->telegram->changeLang($user, $id, $message_id);
                     return 1;
                 }
             }
