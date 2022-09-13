@@ -1267,9 +1267,6 @@ class Telegram
 
     public function sendMenu($user)
     {
-
-        $user->status_id = Status::GET[Status::NORMAL];
-        $user->save();
         $buttons = [
             'inline_keyboard' => [
                 [
