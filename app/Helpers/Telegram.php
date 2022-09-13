@@ -1264,10 +1264,9 @@ class Telegram
     }
 
 
-    public function sendMenu($chat_id)
+    public function sendMenu($user)
     {
 
-        $user = User::where('telegram_id', $chat_id)->first();;
         if ($user->status_id >= 4) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
@@ -1282,7 +1281,7 @@ class Telegram
                     ]
                 ]
             ];
-            $this->sendButtons((int)$chat_id, lang('uz', 'menu'), json_encode($buttons));
+            $this->sendButtons((int)$user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
         } else if ($user->status_id == 3) {
             $this->sendVerification($user, $user->phone_number);
         } else if ($user->status_id == 3) {
