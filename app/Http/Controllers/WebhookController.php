@@ -31,12 +31,11 @@ class WebhookController extends Controller
     public function index(Request $request)
     {
         $data = $request->all();
-        SaveDataJob::dispatch($data);
         $call_id = isset($data['callback_query']) ? $data['callback_query']['message']['chat']['id']: '';
 
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
 
-        $user = User::where('telegram_id',$chat_id)->first();;
+        $user = User::where('telegram_id',$chat_id)->first();
 
 
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
@@ -45,9 +44,9 @@ class WebhookController extends Controller
 
             if ($data['message']['text'] == "/start") {
                 if (!$this->telegram->checkNewUser($chat_id))
-                    $this->telegram->sendNameRequest($user);
+                    $this->telegram->setLang($user);
                 else
-                    $this->telegram->changeLang($chat_id);
+                    $this->telegram->setLang($chat_id);
                 return 1;
             }
 

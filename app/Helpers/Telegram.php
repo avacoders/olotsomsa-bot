@@ -36,8 +36,27 @@ class Telegram
         $this->bot = $bot;
     }
 
-    public function changeLang($chat_id){
-        $user = User::where('telegram_id',$chat_id)->first();
+    public function setLang($data)
+    {
+        $user = $this->saveData($data);
+        $text = "TILNI TANLANG\nВЫБЕРИТЕ ЯЗЫК\n\n";
+        $buttons = [
+            [
+                [
+                    "text" => "O'zbekcha 🇺🇿",
+                    "callback_data" => "uz"
+                ],
+                [
+                    "text" => "Русский 🇷🇺",
+                    "callback_data" => "ru"
+                ]
+            ]
+        ];
+        $this->sendButtons($user->telegram_id,$text,json_decode($buttons));
+    }
+
+
+    public function changeLang($user){
         $text = "Tilni tanlang\nВыберите язык";
         $buttons = [
             [
@@ -51,7 +70,7 @@ class Telegram
                 ]
             ]
         ];
-        $this->sendButtons($chat_id,$text,json_decode($buttons));
+        $this->sendButtons($user->telegram_id,$text,json_decode($buttons));
     }
 
 
@@ -1483,7 +1502,6 @@ class Telegram
     {
         $this->setStatus((int)$user->telegram_id, Status::NAME);
         $this->sendMessage($user->telegram_id, lang('uz', 'hi'));
-        Log::debug($user);
     }
 
 
@@ -1504,9 +1522,9 @@ class Telegram
 
                 $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
                 if (!$existing_user) {
-                    $existing_user = User::create($user1);
-
+                    $existing_user =  User::create($user1);
                 }
+                return $existing_user;
 //                $chat = $data['chat'];
 //                $existing_chat = Chat::find($chat['id']);
 //                if ($existing_chat)
@@ -1524,7 +1542,7 @@ class Telegram
             (\Exception $exception) {
                 Log::debug($exception);
                 DB::rollBack();
-                return User::where('telegram_id',1322193369)->first();
+                return $exception;
 
             }
         }
