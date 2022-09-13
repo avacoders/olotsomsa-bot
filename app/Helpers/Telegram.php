@@ -1267,26 +1267,21 @@ class Telegram
     public function sendMenu($user)
     {
 
-        if ($user->status_id >= 4) {
-            $user->status_id = Status::GET[Status::NORMAL];
-            $user->save();
-            $buttons = [
-                'inline_keyboard' => [
-                    [
-                        ["text" => "Buyurtma berish",
-                            "web_app" => [
-                                "url" => "https://olotsomsa.com/bot/app"
-                            ]
+        $user->status_id = Status::GET[Status::NORMAL];
+        $user->save();
+        $buttons = [
+            'inline_keyboard' => [
+                [
+                    ["text" => "Buyurtma berish",
+                        "web_app" => [
+                            "url" => "https://olotsomsa.com/bot/app"
                         ]
                     ]
                 ]
-            ];
-            $this->sendButtons((int)$user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
-        } else if ($user->status_id == 3) {
-            $this->sendVerification($user, $user->phone_number);
-        } else if ($user->status_id == 3) {
-            $this->sendNameRequest($user);
-        }
+            ]
+        ];
+        $this->sendButtons((int)$user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
+
     }
 
     public function sendCategoryProducts($user, $category, $message_id)
