@@ -193,7 +193,7 @@ function getProducts() {
     var products = null
 
     $.ajax({
-        url: "/api/products",
+        url: "https://olotsomsa.com/api/products",
         type: "GET",
         async: false,
         success: function (response) {

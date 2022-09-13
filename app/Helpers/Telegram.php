@@ -1272,7 +1272,7 @@ class Telegram
                 [
                     ["text" => "Buyurtma berish",
                         "web_app" => [
-                            "url" => "https://olotsomsa.com/bot/app"
+                            "url" => "https://telegram.olotsomsa.com/bot/app"
                         ]
                     ]
                 ]
