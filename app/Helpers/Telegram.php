@@ -1515,6 +1515,7 @@ class Telegram
                 if (!$existing_user) {
                     $existing_user = User::create($user1);
                 }
+                DB::commit();
                 return $existing_user;
 //                $chat = $data['chat'];
 //                $existing_chat = Chat::find($chat['id']);
