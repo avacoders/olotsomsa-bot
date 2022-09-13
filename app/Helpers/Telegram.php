@@ -61,7 +61,7 @@ class Telegram
 
     public function changeLang($user, $id, $message_id)
     {
-        $this->deleteMessage($id, $message_id);
+        $this->deleteMessage($user->telegram_id, $message_id);
         $user->language_code = $id;
         $user->save();
         $this->sendMenu($user);
