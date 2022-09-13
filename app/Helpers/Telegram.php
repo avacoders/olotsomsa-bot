@@ -52,7 +52,7 @@ class Telegram
                 ]
             ]
         ];
-        $this->sendButtons($user->telegram_id,$text,json_decode($buttons));
+        $this->sendButtons($user->telegram_id,$text,json_encode($buttons));
     }
 
 
@@ -70,7 +70,7 @@ class Telegram
                 ]
             ]
         ];
-        $this->sendButtons($user->telegram_id,$text,json_decode($buttons));
+        $this->sendButtons($user->telegram_id,$text,json_encode($buttons));
     }
 
 
