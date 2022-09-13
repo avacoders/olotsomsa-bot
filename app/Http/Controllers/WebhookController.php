@@ -121,6 +121,11 @@ class WebhookController extends Controller
                     $this->telegram->cancelSite( $message_id, $id,"receive");
                     return 1;
                 }
+                if($type == "lang")
+                {
+                    $this->telegram->changeLang($user, $id);
+                    return 1;
+                }
             }
 
         }catch (\Exception $exception)

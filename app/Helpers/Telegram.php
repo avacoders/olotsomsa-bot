@@ -39,41 +39,31 @@ class Telegram
     public function setLang($data)
     {
         $user = $this->saveData($data);
-        $text = "TILNI TANLANG\nВЫБЕРИТЕ ЯЗЫК\n\n";
+        $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
         $buttons = [
             "remove_keyboard" => true,
             "inline_keyboard" => [
                 [
                     [
                         "text" => "🇺🇿 O'zbekcha",
-                        "callback_data" => "uz"
+                        "callback_data" => "lang|uz"
                     ],
                     [
                         "text" => "🇷🇺 Русский",
-                        "callback_data" => "ru"
+                        "callback_data" => "lang|ru"
                     ]
                 ]
             ]
         ];
-        Log::debug($this->sendButtons($user->telegram_id,$text,json_encode($buttons)));
+        Log::debug($this->sendButtons($user->telegram_id, $text, json_encode($buttons)));
     }
 
 
-    public function changeLang($user){
-        $text = "Tilni tanlang\nВыберите язык";
-        $buttons = [
-            [
-                [
-                    "text" => "O'zbekcha",
-                    "callback_data" => "uz"
-                ],
-                [
-                    "text" => "Русский",
-                    "callback_data" => "ru"
-                ]
-            ]
-        ];
-        $this->sendButtons($user->telegram_id,$text,json_encode($buttons));
+    public function changeLang($user, $id)
+    {
+        $user->lang = $id;
+        $user->save();
+        $this->sendMenu($user);
     }
 
 
@@ -81,7 +71,7 @@ class Telegram
     {
         DB::beginTransaction();
 
-        $user = User::where('telegram_id',$request->user['id'])->first();
+        $user = User::where('telegram_id', $request->user['id'])->first();
 
         try {
             $order = Order::create([
@@ -1267,7 +1257,7 @@ class Telegram
 
     public function checkNewUser($user_id)
     {
-        $user = User::where('telegram_id',$user_id)->first();
+        $user = User::where('telegram_id', $user_id)->first();
 
 
         return $user && $user->phone_number;
@@ -1277,7 +1267,7 @@ class Telegram
     public function sendMenu($chat_id)
     {
 
-        $user = User::where('telegram_id',$chat_id)->first();;
+        $user = User::where('telegram_id', $chat_id)->first();;
         if ($user->status_id >= 4) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
@@ -1494,7 +1484,7 @@ class Telegram
 
     public function setStatus($chat_id, $status)
     {
-        $user = User::where('telegram_id',$chat_id)->first();;
+        $user = User::where('telegram_id', $chat_id)->first();;
         $user->status_id = Status::GET[$status];
         $user->save();
     }
@@ -1524,7 +1514,7 @@ class Telegram
 
                 $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
                 if (!$existing_user) {
-                    $existing_user =  User::create($user1);
+                    $existing_user = User::create($user1);
                 }
                 return $existing_user;
 //                $chat = $data['chat'];
