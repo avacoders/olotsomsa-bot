@@ -259,7 +259,7 @@
 
     mainBtn.onClick(() => {
         if (selected.length > 1) {
-            axios.post('/api/bot', {
+            axios.post('https:/telegram.olotsomsa.com/api/bot', {
                 query_id: window.Telegram.WebApp.initDataUnsafe.query_id,
                 user: window.Telegram.WebApp.initDataUnsafe.user,
                 orders: selected
