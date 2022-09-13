@@ -41,18 +41,20 @@ class Telegram
         $user = $this->saveData($data);
         $text = "TILNI TANLANG\nВЫБЕРИТЕ ЯЗЫК\n\n";
         $buttons = [
-            [
+            "remove_keyboard" => true,
+            "inline_keyboard" => [
                 [
-                    "text" => "O'zbekcha 🇺🇿",
-                    "callback_data" => "uz"
-                ],
-                [
-                    "text" => "Русский 🇷🇺",
-                    "callback_data" => "ru"
+                    [
+                        "text" => "🇺🇿 O'zbekcha",
+                        "callback_data" => "uz"
+                    ],
+                    [
+                        "text" => "🇷🇺 Русский",
+                        "callback_data" => "ru"
+                    ]
                 ]
             ]
         ];
-        Log::debug($user);
         Log::debug($this->sendButtons($user->telegram_id,$text,json_encode($buttons)));
     }
 
