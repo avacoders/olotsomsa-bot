@@ -53,7 +53,7 @@ class Telegram
             ]
         ];
         Log::debug($user);
-        $this->sendButtons($user->telegram_id,$text,json_encode($buttons));
+        Log::debug($this->sendButtons($user->telegram_id,$text,json_encode($buttons)));
     }
 
 
