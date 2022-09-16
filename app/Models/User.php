@@ -61,6 +61,11 @@ class User extends Authenticatable
         return $this->hasMany(OrderProduct::class);
     }
 
+    public function getLangAttribute()
+    {
+        return $this->language_code == "uz" ? "🇺🇿 O'zbekcha" : "🇷🇺 Русский";
+    }
+
 
 
 }

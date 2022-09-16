@@ -63,6 +63,11 @@ class WebhookController extends Controller
                 $this->telegram->checkOrder($user);
                 return 1;
             }
+            if ($data['message']['text'] == 'settings') {
+                $this->telegram->settings($user);
+                return 1;
+            }
+
 
             $this->telegram->base($user, $data);
 

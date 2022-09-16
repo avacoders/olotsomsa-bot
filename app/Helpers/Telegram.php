@@ -36,6 +36,46 @@ class Telegram
         $this->bot = $bot;
     }
 
+    public function settings($user)
+    {
+        $text = "🔧 Sozlamalar / Profil \n";
+        $text .= "👤 " . $user->name . "\n";
+        $text .= "📞 " . $user->phone . "\n";
+        $text .= "🔄 " . $user->lang . "\n";
+        $text .= "📱 " . $user->telegram_id . "\n";
+
+        $buttons = [
+            "inline_keyboard" => [
+                [
+                    [
+                        "text" => "📝 Tilni o'zgartirish",
+                        "callback_data" => "lang"
+                    ]
+                ],
+                [
+                    [
+                        "text" => "📝 Telefon raqamni o'zgartirish",
+                        "callback_data" => "phone"
+                    ]
+                ],
+                [
+                    [
+                        "text" => "📝 Manzilni o'zgartirish",
+                        "callback_data" => "location"
+                    ]
+                ],
+                [
+                    [
+                        "text" => "🔙 Orqaga",
+                        "callback_data" => "back"
+                    ]
+                ]
+            ]
+        ];
+        $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
+    }
+
+
     public function setLang($data)
     {
         $user = $this->saveData($data);
