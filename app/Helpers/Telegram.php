@@ -41,8 +41,14 @@ class Telegram
         $this->deleteMessage($user->telegram_id, $message_id);
         $text = lang($user->language_code, 'ask_phone1')."\n".lang($user->language_code, 'ask_phone2');
         $buttons = [
-            [
-                ['text' => lang($user->language_code, 'send_phone'), 'request_contact' => true]
+            'reply_markup' => [
+                'keyboard' => [
+                    [
+                        ['text' => lang($user->language_code, 'send_phone'), 'request_contact' => true]
+                    ]
+                ],
+                'resize_keyboard' => true,
+                'one_time_keyboard' => true
             ]
         ];
         $this->sendButtons($user->telegram_id, $text,json_encode($buttons));
