@@ -105,6 +105,27 @@ class Telegram
         ];
         Log::debug($this->sendButtons($user->telegram_id, $text, json_encode($buttons)));
     }
+    public function lang($user)
+    {
+        $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
+        $buttons = [
+            "remove_keyboard" => true,
+            "inline_keyboard" => [
+                [
+                    [
+                        "text" => "🇺🇿 O'zbekcha",
+                        "callback_data" => "lang|uz"
+                    ],
+                    [
+                        "text" => "🇷🇺 Русский",
+                        "callback_data" => "lang|ru"
+                    ]
+                ]
+            ]
+        ];
+        Log::debug($this->sendButtons($user->telegram_id, $text, json_encode($buttons)));
+    }
+
 
 
     public function changeLang($user, $id, $message_id)
