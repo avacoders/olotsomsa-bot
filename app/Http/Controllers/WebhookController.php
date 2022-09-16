@@ -80,7 +80,7 @@ class WebhookController extends Controller
                 $callback_data = $data['callback_query']['data']? explode('|', $data['callback_query']['data']):['',''];
                 $product = isset($callback_data[2]) ? $callback_data[2] : '';
                 $type = $callback_data[0];
-                $id = $callback_data[1];
+                $id = isset($callback_data[1])? $callback_data[1]:'';
                 if ($type == "addMinute") {
                     $this->telegram->minute($message_id, $id, "plus", $product);
                     return 1;
