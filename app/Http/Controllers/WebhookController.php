@@ -126,6 +126,11 @@ class WebhookController extends Controller
                     $this->telegram->cancelSite( $message_id, $id,"receive");
                     return 1;
                 }
+                if ($type == "change_lang") {
+                    $this->telegram->deleteMessage($user->telegram_id,$message_id);
+                    $this->telegram->setLang(null);
+                    return 1;
+                }
                 if($type == "lang")
                 {
                     $this->telegram->changeLang($user, $id, $message_id);
@@ -205,6 +210,10 @@ class WebhookController extends Controller
                     return 1;
                 }
 
+                if ($type == "phone") {
+                    $this->telegram->askPhone($user, $message_id);
+                    return 1;
+                }
 
 
 

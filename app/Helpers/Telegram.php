@@ -36,11 +36,17 @@ class Telegram
         $this->bot = $bot;
     }
 
+    public function askPhone($user, $message_id)
+    {
+        $this->deleteMessage($user->telegram_id, $message_id);
+
+    }
+
     public function settings($user)
     {
         $text = "🔧 Sozlamalar / Profil \n\n";
         $text .= "👤 Ism: " . $user->name . "\n";
-        $text .= "📞 Telefon raqam: " . $user->phone_number . "\n"?? "No'malum" . "\n";
+        $text .= "📞 Telefon raqam: " . $user->phone_number . "\n" ?? "No'malum" . "\n";
         $text .= "🔄 Til: " . $user->lang . "\n";
         $text .= "🆔 ID: " . $user->telegram_id . "\n";
 
@@ -49,7 +55,7 @@ class Telegram
                 [
                     [
                         "text" => "📝 Tilni o'zgartirish",
-                        "callback_data" => "lang"
+                        "callback_data" => "change_lang"
                     ]
                 ],
                 [
@@ -57,7 +63,20 @@ class Telegram
                         "text" => "📝 Telefon raqamni o'zgartirish",
                         "callback_data" => "phone"
                     ]
+                ],
+                [
+                    [
+                        "text" => "📝 Ismni o'zgartirish",
+                        "callback_data" => "phone"
+                    ]
+                ],
+                [
+                    [
+                        "text" => "🗒 Buyurtmalar tarixi",
+                        "callback_data" => "back"
+                    ]
                 ]
+
             ]
         ];
         $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
@@ -66,7 +85,8 @@ class Telegram
 
     public function setLang($data)
     {
-        $user = $this->saveData($data);
+        if ($data)
+            $user = $this->saveData($data);
         $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
         $buttons = [
             "remove_keyboard" => true,
