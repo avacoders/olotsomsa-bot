@@ -183,6 +183,7 @@ class Telegram
 
         $user = User::where('telegram_id', $request->user['id'])->first();
 
+        Log::debug($request->all());
         try {
             $order = Order::create([
                 'user_id' => $user->id,
