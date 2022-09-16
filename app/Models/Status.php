@@ -17,6 +17,7 @@ class Status extends Model
     const NAME = "name";
     const PHONE_NUMBER = "phone_number";
     const VERIFICATION = "verification";
+    const VERIFICATION1 = "verification1";
     const NORMAL = "normal";
     const LOCATION_SELECT = "location_select";
     const LOCATION_REQUEST = "location_request";
@@ -32,6 +33,7 @@ class Status extends Model
         self::NAME => 1,
         self::PHONE_NUMBER => 2,
         self::VERIFICATION => 3,
+        self::VERIFICATION1 => 13,
         self::NORMAL => 4,
         self::LOCATION_SELECT => 5,
         self::LOCATION_REQUEST => 6,

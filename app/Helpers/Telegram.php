@@ -561,11 +561,14 @@ class Telegram
     public function confirm($user, $message_id)
     {
         try {
+
             $user->status_id = Status::GET[Status::ENTER_NAME];
             $user->save();
+            if ($user->phone_number)
+                $this->location($user, $message_id, 1);
+            else
+                $this->askPhone($user, $message_id, Status::GET[Status::ASK_PHONE]);
             $this->deleteMessage($user->telegram_id, $message_id);
-            $this->sendMessage($user->telegram_id, lang("uz", 'hi'));
-//            $this->location($user, $message_id, 1);
         } catch (\Exception $exception) {
             Log::debug($exception);
         }
@@ -1290,7 +1293,7 @@ class Telegram
     }
 
 
-    public function sendVerification($user, $contact)
+    public function sendVerification($user, $contact, $status = STATUS::GET[Status::PHONE_NUMBER])
     {
         $contact = preg_replace('/[^0-9.]+/', '', $contact);
 
@@ -1310,8 +1313,6 @@ class Telegram
             $this->sendContactRequest($user);
             return 1;
         }
-
-
         $code = rand(10000, 99999);
         $buttons = [
             "remove_keyboard" => true
@@ -1320,7 +1321,12 @@ class Telegram
         $user->phone_number = $contact;
         $user->verification_code = $code;
         $user->verification_expires_at = now()->addMinutes(5);
-        $user->status_id = Status::GET[Status::VERIFICATION];
+        if($status == STATUS::GET[Status::PHONE_NUMBER]){
+            $user->status_id = Status::VERIFICATION;
+        }
+        if($status == STATUS::GET[Status::ASK_PHONE]){
+            $user->status_id = Status::VERIFICATION1;
+        }
         $user->save();
         $text = "SIZNING OLOTSOMSA ORIGINAL BOT UCHUN KODINGIZ: $code";
         Sms::send($contact, $text);
