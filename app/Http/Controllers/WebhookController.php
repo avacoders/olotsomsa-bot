@@ -141,8 +141,8 @@ class WebhookController extends Controller
         }
         if ($user) {
 
-            if ($this->telegram->checkChatStatus($user, Status::PHONE_NUMBER) && isset($data["message"]['contact'])) {
-                $this->telegram->sendVerification($user, $data["message"]['contact']['phone_number']);
+            if ($user->status_id == Status::PHONE_NUMBER && isset($data["message"]['contact'])) {
+                $this->telegram->setPhone($user, $data["message"]['contact']['phone_number']);
                 return 1;
             }
 

@@ -39,7 +39,7 @@ class Telegram
     public function askPhone($user, $message_id)
     {
         $this->deleteMessage($user->telegram_id, $message_id);
-        $text = lang($user->language_code, 'ask_phone1') . "\n" . lang($user->language_code, 'ask_phone2') . "998903911755";
+        $text = lang($user->language_code, 'ask_phone1') . "\n" . lang($user->language_code, 'ask_phone2') . " 998903911755";
         $buttons = [
             'keyboard' => [
                 [
@@ -53,7 +53,16 @@ class Telegram
             'one_time_keyboard' => true
 
         ];
+        $user->status_id = Status::PHONE_NUMBER;
+        $user->save();
         $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
+    }
+
+    public function setPhone($user, $phone)
+    {
+        $user->phone_number = $phone;
+        $user->save();
+        $this->sendMenu($user);
     }
 
     public function settings($user)
