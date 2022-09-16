@@ -1371,7 +1371,7 @@ class Telegram
                 ]
             ]
         ];
-        $this->sendButtons((int)$user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
+        $this->sendButtons($user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
 
     }
 
