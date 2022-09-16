@@ -280,6 +280,17 @@ class Telegram
         }
 
     }
+    public function checkVerification1($user, $text)
+    {
+        if ($user->verification_code == $text) {
+            $user->status_id = Status::GET[Status::NORMAL];
+            $user->save();
+            $this->location($user,0,1);
+        } else {
+            $this->sendMessage($user->telegram_id, lang("uz", 'error'));
+        }
+
+    }
 
     public function sendSelect($user, $message_id, $product, $quantity)
     {
@@ -824,6 +835,11 @@ class Telegram
 
                 if ($this->checkChatStatus($user, Status::VERIFICATION)) {
                     $this->checkVerification($user, $data["message"]['text']);
+                    return 1;
+                }
+
+                if ($this->checkChatStatus($user, Status::VERIFICATION1)) {
+                    $this->checkVerification1($user, $data["message"]['text']);
                     return 1;
                 }
             }
