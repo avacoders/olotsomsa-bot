@@ -53,6 +53,7 @@ class Telegram
         $text = lang($user->language_code, 'hi');
         $user->status_id = Status::GET[Status::ASK_NAME];
         $user->save();
+        Log::debug(213123);
         $this->sendMessage($user->telegram_id, $text);
     }
 

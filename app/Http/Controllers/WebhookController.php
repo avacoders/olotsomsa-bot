@@ -213,7 +213,7 @@ class WebhookController extends Controller
                 }
 
                 if ($type == "phone") {
-                    $this->telegram->askPhone($user, $message_id);
+                    $this->telegram->askPhone($user, $message_id, Status::GET[Status::PHONE_NUMBER]);
                     return 1;
                 }
                 if ($type == "name") {
