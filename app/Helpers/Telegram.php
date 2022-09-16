@@ -35,6 +35,14 @@ class Telegram
         $this->http = new Http();
         $this->bot = $bot;
     }
+    public function askName($user, $message_id)
+    {
+        $this->deleteMessage($user->telegram_id, $message_id);
+        $text = lang($user->language_code, 'ask_phone1') . "\n" . lang($user->language_code, 'ask_phone2') . " 998903911755";
+        $user->status_id = Status::GET[Status::NAME];
+        $user->save();
+        $this->sendMessage($user->telegram_id, $text);
+    }
 
     public function askPhone($user, $message_id)
     {
