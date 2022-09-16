@@ -103,7 +103,7 @@ class Telegram
                 ]
             ]
         ];
-        Log::debug($this->sendButtons($user->telegram_id, $text, json_encode($buttons)));
+        $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
     public function lang($user)
     {
@@ -123,7 +123,7 @@ class Telegram
                 ]
             ]
         ];
-        Log::debug($this->sendButtons($user->telegram_id, $text, json_encode($buttons)));
+        $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
 
 
