@@ -40,7 +40,7 @@ class Telegram
     {
         $text = "🔧 Sozlamalar / Profil \n\n";
         $text .= "👤 Ism: " . $user->name . "\n";
-        $text .= "📞 Telefon raqam: " . $user->phone_number ?? "No'malum" . "\n";
+        $text .= "📞 Telefon raqam: " . $user->phone_number . "\n"?? "No'malum" . "\n";
         $text .= "🔄 Til: " . $user->lang . "\n";
         $text .= "🆔 ID: " . $user->telegram_id . "\n";
 
