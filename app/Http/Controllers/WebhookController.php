@@ -37,9 +37,6 @@ class WebhookController extends Controller
 
         $user = User::where('telegram_id',$chat_id)->first();
 
-
-        $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
-
         if (isset($data['message']) && isset($data['message']['text'])) {
 
             if ($data['message']['text'] == "/start") {
@@ -128,7 +125,7 @@ class WebhookController extends Controller
                 }
                 if ($type == "change_lang") {
                     $this->telegram->deleteMessage($user->telegram_id,$message_id);
-                    $this->telegram->lang(null);
+                    $this->telegram->setLang(null);
                     return 1;
                 }
                 if($type == "lang")
@@ -159,7 +156,7 @@ class WebhookController extends Controller
                 $message_id = $data['callback_query']['message']['message_id'];
                 $callback_data =$data['callback_query']['data']? explode('|', $data['callback_query']['data']):['',''];
                 $type = $callback_data[0];
-                $id = $callback_data[1];
+                $id = isset($callback_data[1])? $callback_data[1]:'';
                 $product = isset($callback_data[2]) ? $callback_data[2] : '';
 
                 if ($type == 'category') {
