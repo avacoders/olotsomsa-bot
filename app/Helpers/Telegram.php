@@ -181,6 +181,7 @@ class Telegram
     {
         DB::beginTransaction();
 
+        Log::debug($request->all());
         $user = User::where('telegram_id', $request->user['id'])->first();
 
         try {
@@ -230,7 +231,7 @@ class Telegram
             DB::commit();
             return response()->json(['ok' => true]);
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             Log::debug($exception);
             DB::rollBack();
             return response()->json(['ok' => false]);
