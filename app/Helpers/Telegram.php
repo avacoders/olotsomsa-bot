@@ -35,11 +35,20 @@ class Telegram
         $this->http = new Http();
         $this->bot = $bot;
     }
+
+    public function setName($user, $name)
+    {
+        $user->name = $name;
+        $user->save();
+        $this->sendMenu($user);
+    }
+
+
     public function askName($user, $message_id)
     {
         $this->deleteMessage($user->telegram_id, $message_id);
         $text = lang($user->language_code, 'hi');
-        $user->status_id = Status::GET[Status::NAME];
+        $user->status_id = Status::GET[Status::ASK_NAME];
         $user->save();
         $this->sendMessage($user->telegram_id, $text);
     }
@@ -800,6 +809,10 @@ class Telegram
                 }
                 if ($user->status_id == Status::GET[Status::PHONE_NUMBER]) {
                     $this->sendVerification($user, $data["message"]['text']);
+                    return 1;
+                }
+                if ($user->status_id == Status::GET[Status::ASK_NAME]) {
+                    $this->setName($user, $data["message"]['text']);
                     return 1;
                 }
                 if ($data["message"]['text'] == "/restore") {
