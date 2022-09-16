@@ -86,7 +86,7 @@ class Telegram
         if ($status == Status::GET[Status::PHONE_NUMBER])
             $this->sendMenu($user);
         if ($status == Status::GET[Status::ASK_PHONE])
-            $this->askLocation($user, 0, Status::GET[Status::ASK_LOCATION]);
+            $this->askLocation($user, 0, Status::GET[Status::LOCATION_SELECT]);
     }
 
     public function askLocation($user,)
@@ -1293,7 +1293,7 @@ class Telegram
     }
 
 
-    public function sendVerification($user, $contact, $status = STATUS::GET[Status::PHONE_NUMBER])
+    public function sendVerification($user, $contact, $status = Status::GET[Status::PHONE_NUMBER])
     {
         Log::debug($status);
         $contact = preg_replace('/[^0-9.]+/', '', $contact);
