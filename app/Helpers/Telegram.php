@@ -98,13 +98,13 @@ class Telegram
                 [
                     [
                         "text" => "📝 Ismni o'zgartirish",
-                        "callback_data" => "phone"
+                        "callback_data" => "name"
                     ]
                 ],
                 [
                     [
                         "text" => "🗒 Buyurtmalar tarixi",
-                        "callback_data" => "back"
+                        "callback_data" => "history"
                     ]
                 ]
 
