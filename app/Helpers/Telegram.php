@@ -801,6 +801,10 @@ class Telegram
                     $this->setName($user, $data["message"]['text'], Status::GET[Status::ASK_NAME]);
                     return 1;
                 }
+                if ($user->status_id == Status::GET[Status::ENTER_NAME]) {
+                    $this->setName($user, $data["message"]['text'], Status::GET[Status::ENTER_NAME]);
+                    return 1;
+                }
                 if ($user->status_id == Status::GET[Status::ASK_PHONE]) {
                     $this->setName($user, $data["message"]['text'], Status::GET[Status::ASK_PHONE]);
                     return 1;
