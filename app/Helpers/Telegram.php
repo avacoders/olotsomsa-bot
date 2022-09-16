@@ -628,7 +628,7 @@ class Telegram
     {
         DB::beginTransaction();
         try {
-            if ($user->status_id == Status::GET[Status::LOCATION_SELECT] || $user->status_id == Status::GET[Status::PAYMENT]) {
+            if ($user->status_id == Status::GET[Status::LOCATION_SELECT] || $user->status_id == Status::GET[Status::PAYMENT] || $user->status_id == Status::GET[Status::VERIFICATION1]) {
                 $location = [
                     'text' => lang("uz", 'geolocation'),
                     'request_location' => true
