@@ -1323,10 +1323,10 @@ class Telegram
         $user->verification_code = $code;
         $user->verification_expires_at = now()->addMinutes(5);
         if($status == STATUS::GET[Status::PHONE_NUMBER]){
-            $user->status_id = Status::VERIFICATION;
+            $user->status_id = STATUS::GET[Status::VERIFICATION];
         }
         if($status == STATUS::GET[Status::ASK_PHONE]){
-            $user->status_id = Status::VERIFICATION1;
+            $user->status_id = STATUS::GET[Status::VERIFICATION1];
         }
         $user->save();
         $text = "SIZNING OLOTSOMSA ORIGINAL BOT UCHUN KODINGIZ: $code";
