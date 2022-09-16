@@ -207,27 +207,27 @@ class Telegram
 
             $order_products = $order->order_products()->where('status_id', OrderProduct::STATUS_BASKET)->get();
 
-//            if (count($order_products)) {
-//                $text = "";
-//
-//                $sum = 0;
-//                $price = 1;
-//                foreach ($order_products as $product) {
-//                    $price = $product->product->price * $product->quantity;
-//                    $sum += $price;
-//                    $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
-//                }
-//
-//                $text .= "\n $sum so'm \n";
-//
-//                $buttons = [
-//                    'inline_keyboard' => []
-//                ];
-//                $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|1');
-//                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
-//            } else {
-//                $this->sendMessage($user->telegram_id, lang('uz', 'empty'));
-//            }
+            if (count($order_products)) {
+                $text = "";
+
+                $sum = 0;
+                $price = 1;
+                foreach ($order_products as $product) {
+                    $price = $product->product->price * $product->quantity;
+                    $sum += $price;
+                    $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
+                }
+
+                $text .= "\n $sum so'm \n";
+
+                $buttons = [
+                    'inline_keyboard' => []
+                ];
+                $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|1');
+                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
+            } else {
+                $this->sendMessage($user->telegram_id, lang('uz', 'empty'));
+            }
 
             DB::commit();
             return response()->json(['ok' => true]);
