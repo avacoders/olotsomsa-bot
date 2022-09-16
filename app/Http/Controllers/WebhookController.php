@@ -125,7 +125,7 @@ class WebhookController extends Controller
                 }
                 if ($type == "change_lang") {
                     $this->telegram->deleteMessage($user->telegram_id,$message_id);
-                    $this->telegram->lang(null);
+                    $this->telegram->lang($user);
                     return 1;
                 }
                 if($type == "lang")
