@@ -44,7 +44,7 @@ class Telegram
             'reply_markup' => [
                 'keyboard' => [
                     [
-                        ['text' => lang($user->language_code, 'send_phone'), 'request_contact' => true]
+                        ['text' => lang($user->language_code, 'phone'), 'request_contact' => true]
                     ]
                 ],
                 'resize_keyboard' => true,
