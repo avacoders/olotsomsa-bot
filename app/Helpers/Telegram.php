@@ -283,7 +283,7 @@ class Telegram
     public function checkVerification1($user, $text)
     {
         if ($user->verification_code == $text) {
-            $user->status_id = Status::GET[Status::NORMAL];
+            $user->status_id = Status::GET[Status::LOCATION_SELECT];
             $user->save();
             $this->location($user,0,1);
         } else {
@@ -628,7 +628,7 @@ class Telegram
     {
         DB::beginTransaction();
         try {
-            if ($user->status_id == Status::GET[Status::LOCATION_SELECT] || $user->status_id == Status::GET[Status::PAYMENT] || $user->status_id == Status::GET[Status::VERIFICATION1]) {
+            if ($user->status_id == Status::GET[Status::LOCATION_SELECT] || $user->status_id == Status::GET[Status::PAYMENT]) {
                 $location = [
                     'text' => lang("uz", 'geolocation'),
                     'request_location' => true
