@@ -38,11 +38,11 @@ class Telegram
 
     public function settings($user)
     {
-        $text = "🔧 Sozlamalar / Profil \n";
-        $text .= "👤 " . $user->name . "\n";
-        $text .= "📞 " . $user->phone . "\n";
-        $text .= "🔄 " . $user->lang . "\n";
-        $text .= "📱 " . $user->telegram_id . "\n";
+        $text = "🔧 Sozlamalar / Profil \n\n";
+        $text .= "👤 Ism: " . $user->name . "\n";
+        $text .= "📞 Telefon raqam: " . $user->phone_number ?? "No'malum" . "\n";
+        $text .= "🔄 Til: " . $user->lang . "\n";
+        $text .= "🆔 ID: " . $user->telegram_id . "\n";
 
         $buttons = [
             "inline_keyboard" => [
