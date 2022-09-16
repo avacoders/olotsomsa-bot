@@ -192,6 +192,7 @@ class Telegram
             ]);
             foreach ($request->orders as $key => $item) {
                 if ($key && isset($item['quantity']) && $item['quantity']) {
+                    Log::debug($key);
                     $order_product = [
                         'product_id' => (int)$key,
                         'order_id' => $order->id,
