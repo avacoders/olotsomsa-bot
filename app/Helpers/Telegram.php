@@ -342,7 +342,7 @@ class Telegram
             $this->sendSelect($user, $message_id, $product, $quantity);
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
         }
 
@@ -398,7 +398,7 @@ class Telegram
             $this->sendSelect($user, $message_id, $product, $order_product->quantity);
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
         }
 
@@ -418,7 +418,7 @@ class Telegram
                 $order_product->status_id = OrderProduct::STATUS_BASKET;
                 $order_product->save();
                 $this->deleteMessage($user->telegram_id, $message_id);
-                $this->sendMenu($user->telegram_id);
+                $this->sendMenu($user);
             } else {
                 if ($order_product)
                     $order_product->delete();
@@ -427,7 +427,7 @@ class Telegram
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
         }
 
@@ -489,7 +489,7 @@ class Telegram
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
         }
 
@@ -576,11 +576,11 @@ class Telegram
                 $user->save();
                 $this->sendButtons($user->telegram_id, lang("uz", 'location_text'), json_encode($buttons));
             } else {
-                $this->sendMenu($user->telegram_id);
+                $this->sendMenu($user);
             }
             DB::beginTransaction();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             Log::debug($exception);
             DB::rollBack();
         }
@@ -590,7 +590,7 @@ class Telegram
 
     public function back($user)
     {
-        $this->sendMenu($user->telegram_id);
+        $this->sendMenu($user);
 
     }
 
@@ -617,11 +617,11 @@ class Telegram
                 $this->deleteMessage($user->telegram_id, $message_id);
                 $this->sendButtons($user->telegram_id, lang("uz", 'location_text'), json_encode($buttons));
             } else {
-                $this->sendMenu($user->telegram_id);
+                $this->sendMenu($user);
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
             Log::debug($exception);
 
@@ -664,11 +664,11 @@ class Telegram
 
                 $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
             } else {
-                $this->sendMenu($user->telegram_id);
+                $this->sendMenu($user);
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
             Log::debug($exception);
 
@@ -699,7 +699,7 @@ class Telegram
             $this->sendButtons($user->telegram_id, "BIROR GAPINGIZ BO'LSA YOZING", json_encode($buttons));
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
             DB::rollBack();
             Log::debug($exception);
         }
@@ -752,7 +752,7 @@ class Telegram
         } catch (\Exception $exception) {
             Log::debug($exception);
             DB::rollBack();
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
         }
 
 
@@ -836,7 +836,7 @@ class Telegram
 
 
             } else {
-                $this->sendMenu($user->telegram_id);
+                $this->sendMenu($user);
             }
 
             DB::commit();
