@@ -241,7 +241,7 @@ class Telegram
         if ($user->verification_code == $text) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
-            $this->sendMenu($user->telegram_id);
+            $this->sendMenu($user);
         } else {
             $this->sendMessage($user->telegram_id, lang("uz", 'error'));
         }
