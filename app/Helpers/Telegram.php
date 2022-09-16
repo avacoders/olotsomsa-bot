@@ -53,7 +53,7 @@ class Telegram
             'one_time_keyboard' => true
 
         ];
-        $user->status_id = Status::PHONE_NUMBER;
+        $user->status_id = Status::GET[Status::PHONE_NUMBER];
         $user->save();
         $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
