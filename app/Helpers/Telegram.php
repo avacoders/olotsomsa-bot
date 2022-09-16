@@ -39,19 +39,21 @@ class Telegram
     public function askPhone($user, $message_id)
     {
         $this->deleteMessage($user->telegram_id, $message_id);
-        $text = lang($user->language_code, 'ask_phone1')."\n".lang($user->language_code, 'ask_phone2');
+        $text = lang($user->language_code, 'ask_phone1') . "\n" . lang($user->language_code, 'ask_phone2') . "998903911755";
         $buttons = [
-            'reply_markup' => [
-                'keyboard' => [
+            'keyboard' => [
+                [
                     [
-                        ['text' => lang($user->language_code, 'phone'), 'request_contact' => true]
+                        'text' => lang($user->language_code, 'phone'),
+                        'request_contact' => true
                     ]
-                ],
-                'resize_keyboard' => true,
-                'one_time_keyboard' => true
-            ]
+                ]
+            ],
+            'resize_keyboard' => true,
+            'one_time_keyboard' => true
+
         ];
-        $this->sendButtons($user->telegram_id, $text,json_encode($buttons));
+        $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
 
     public function settings($user)
@@ -117,6 +119,7 @@ class Telegram
         ];
         $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
+
     public function lang($user)
     {
         $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
@@ -137,7 +140,6 @@ class Telegram
         ];
         $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
-
 
 
     public function changeLang($user, $id, $message_id)
