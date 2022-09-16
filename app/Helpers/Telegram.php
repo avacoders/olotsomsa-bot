@@ -40,9 +40,9 @@ class Telegram
     {
         $user->name = $name;
         $user->save();
-        if ($status == Status::GET[Status::NAME])
+        if ($status == Status::GET[Status::ASK_NAME])
             $this->sendMenu($user);
-        else if ($status == Status::GET[Status::ASK_NAME])
+        else if ($status == Status::GET[Status::ENTER_NAME])
             $this->askPhone($user, 0, Status::GET[Status::ASK_PHONE]);
     }
 
