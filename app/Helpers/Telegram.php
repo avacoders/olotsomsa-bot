@@ -40,10 +40,10 @@ class Telegram
     {
         $user->name = $name;
         $user->save();
-        if ($status == Status::GET[Status::ASK_NAME])
-            $this->sendMenu($user);
-        else if ($status == Status::GET[Status::ENTER_NAME])
-            $this->askPhone($user, 0, Status::GET[Status::ASK_PHONE]);
+//        if ($status == Status::GET[Status::ASK_NAME])
+        $this->sendMenu($user);
+//        else if ($status == Status::GET[Status::ENTER_NAME])
+//            $this->askPhone($user, 0, Status::GET[Status::ASK_PHONE]);
     }
 
 
@@ -281,12 +281,13 @@ class Telegram
         }
 
     }
+
     public function checkVerification1($user, $text)
     {
         if ($user->verification_code == $text) {
             $user->status_id = Status::GET[Status::LOCATION_SELECT];
             $user->save();
-            $this->location($user,0,1);
+            $this->location($user, 0, 1);
         } else {
             $this->sendMessage($user->telegram_id, lang("uz", 'error'));
         }
@@ -1339,10 +1340,10 @@ class Telegram
         $user->phone_number = $contact;
         $user->verification_code = $code;
         $user->verification_expires_at = now()->addMinutes(5);
-        if($status == STATUS::GET[Status::PHONE_NUMBER]){
+        if ($status == STATUS::GET[Status::PHONE_NUMBER]) {
             $user->status_id = STATUS::GET[Status::VERIFICATION];
         }
-        if($status == STATUS::GET[Status::ASK_PHONE]){
+        if ($status == STATUS::GET[Status::ASK_PHONE]) {
             $user->status_id = STATUS::GET[Status::VERIFICATION1];
         }
         $user->save();
