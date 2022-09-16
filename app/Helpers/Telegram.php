@@ -505,7 +505,7 @@ class Telegram
             $orders = $user->orders()->where("status_id", Order::STATUS_COMPLETE)->get();
 
             if (!count($orders)) {
-                $this->answerCallbackQuery($callback_query_id, lang("uz", 'no_order'));
+                $this->answerCallbackQuery($callback_query_id, lang("uz", 'no_orders'));
                 return 1;
             }
             foreach ($orders as $order) {
@@ -513,10 +513,8 @@ class Telegram
                 $order_product = OrderProduct::query()
                     ->where('order_id', $order->id)
                     ->where('status_id', OrderProduct::STATUS_BASKET)->get();
-
-                if (count($order_product)) {
                     $text = "Buyurtma № $order->id \n";
-                    $text = "Buyurtma vaqti: $order->created_at \n";
+                    $text .= "Buyurtma vaqti: $order->created_at \n";
 
                     $sum = 0;
                     $price = 1;
@@ -527,13 +525,8 @@ class Telegram
                         $sum += $price;
                         $text .= "$i. <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " so'm = " . $price . " so'm \n";
                     }
-
                     $text .= "\n" . lang("uz", 'general') . ": $sum so'm \n";
                     $this->sendMessage($user->telegram_id, $text);
-                } else {
-                    $this->answerCallbackQuery($callback_query_id, lang("uz", 'empty'));
-                }
-
             }
 
 
