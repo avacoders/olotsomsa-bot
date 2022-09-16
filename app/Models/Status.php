@@ -24,6 +24,8 @@ class Status extends Model
     const COMMENT = "comment";
     const PAYMENT = "payment";
     const ASK_NAME = "ask_name";
+    const ENTER_NAME = "enter_name";
+    const ASK_PHONE = "ask_phone";
 
 
     const GET = [
@@ -36,7 +38,9 @@ class Status extends Model
         self::LOCATION_VERIFY => 7,
         self::COMMENT => 8,
         self::PAYMENT => 9,
-        self::ASK_NAME => 10
+        self::ASK_NAME => 10,
+        self::ENTER_NAME => 11,
+        self::ASK_PHONE => 12,
     ];
 
 

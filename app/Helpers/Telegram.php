@@ -36,11 +36,14 @@ class Telegram
         $this->bot = $bot;
     }
 
-    public function setName($user, $name)
+    public function setName($user, $name, $status)
     {
         $user->name = $name;
         $user->save();
-        $this->sendMenu($user);
+        if ($status == Status::GET[Status::NAME])
+            $this->sendMenu($user);
+        else if ($status == Status::GET[Status::ASK_NAME])
+            $this->askPhone($user, 0, Status::GET[Status::ASK_PHONE]);
     }
 
 
@@ -53,9 +56,10 @@ class Telegram
         $this->sendMessage($user->telegram_id, $text);
     }
 
-    public function askPhone($user, $message_id)
+    public function askPhone($user, $message_id, $status)
     {
-        $this->deleteMessage($user->telegram_id, $message_id);
+        if ($message_id)
+            $this->deleteMessage($user->telegram_id, $message_id);
         $text = lang($user->language_code, 'ask_phone1') . "\n" . lang($user->language_code, 'ask_phone2') . " 998903911755";
         $buttons = [
             'keyboard' => [
@@ -70,16 +74,28 @@ class Telegram
             'one_time_keyboard' => true
 
         ];
-        $user->status_id = Status::GET[Status::PHONE_NUMBER];
+        $user->status_id = $status;
         $user->save();
         $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
 
-    public function setPhone($user, $phone)
+    public function setPhone($user, $phone, $status)
     {
         $user->phone_number = $phone;
         $user->save();
-        $this->sendMenu($user);
+        if ($status == Status::GET[Status::PHONE_NUMBER])
+            $this->sendMenu($user);
+        if ($status == Status::GET[Status::ASK_PHONE])
+            $this->askLocation($user, 0, Status::GET[Status::ASK_LOCATION]);
+    }
+
+    public function askLocation($user,)
+    {
+        $user->status_id = Status::GET[Status::LOCATION_SELECT];
+        $user->save();
+        $this->location($user, 0, 1);
+
+
     }
 
     public function settings($user)
@@ -182,8 +198,6 @@ class Telegram
         DB::beginTransaction();
 
         $user = User::where('telegram_id', $request->user['id'])->first();
-
-        Log::debug($request->all());
         try {
             $order = Order::create([
                 'user_id' => $user->id,
@@ -191,7 +205,7 @@ class Telegram
                 'type' => 0
             ]);
             foreach ($request->orders as $key => $item) {
-                if (isset($item['quantity']) && $item['quantity'] ) {
+                if (isset($item['quantity']) && $item['quantity']) {
                     Log::debug(Product::find($key));
                     $order_product = [
                         'product_id' => (int)$key,
@@ -515,22 +529,21 @@ class Telegram
                 $order_product = OrderProduct::query()
                     ->where('order_id', $order->id)
                     ->where('status_id', OrderProduct::STATUS_BASKET)->get();
-                    $text = "Buyurtma № $order->id \n";
-                    $text .= "Buyurtma vaqti: $order->created_at \n";
+                $text = "Buyurtma № $order->id \n";
+                $text .= "Buyurtma vaqti: $order->created_at \n";
 
-                    $sum = 0;
-                    $price = 1;
-                    $i = 0;
-                    foreach ($order_product as $product) {
-                        $i++;
-                        $price = $product->product->price * $product->quantity;
-                        $sum += $price;
-                        $text .= "$i. <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " so'm = " . $price . " so'm \n";
-                    }
-                    $text .= "\n" . lang("uz", 'general') . ": $sum so'm \n";
-                    $this->sendMessage($user->telegram_id, $text);
+                $sum = 0;
+                $price = 1;
+                $i = 0;
+                foreach ($order_product as $product) {
+                    $i++;
+                    $price = $product->product->price * $product->quantity;
+                    $sum += $price;
+                    $text .= "$i. <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " so'm = " . $price . " so'm \n";
+                }
+                $text .= "\n" . lang("uz", 'general') . ": $sum so'm \n";
+                $this->sendMessage($user->telegram_id, $text);
             }
-
 
 
             DB::commit();
@@ -548,9 +561,11 @@ class Telegram
     public function confirm($user, $message_id)
     {
         try {
-            $user->status_id = Status::GET[Status::LOCATION_SELECT];
+            $user->status_id = Status::GET[Status::ENTER_NAME];
             $user->save();
-            $this->location($user, $message_id, 1);
+            $this->deleteMessage($user->telegram_id, $message_id);
+            $this->sendMessage($user->telegram_id, lang("uz", 'hi'));
+//            $this->location($user, $message_id, 1);
         } catch (\Exception $exception) {
             Log::debug($exception);
         }
@@ -614,7 +629,8 @@ class Telegram
                 $order->save();
                 $user->status_id = Status::GET[Status::LOCATION_REQUEST];
                 $user->save();
-                $this->deleteMessage($user->telegram_id, $message_id);
+                if ($message_id)
+                    $this->deleteMessage($user->telegram_id, $message_id);
                 $this->sendButtons($user->telegram_id, lang("uz", 'location_text'), json_encode($buttons));
             } else {
                 $this->sendMenu($user);
@@ -782,7 +798,11 @@ class Telegram
                     return 1;
                 }
                 if ($user->status_id == Status::GET[Status::ASK_NAME]) {
-                    $this->setName($user, $data["message"]['text']);
+                    $this->setName($user, $data["message"]['text'], Status::GET[Status::ASK_NAME]);
+                    return 1;
+                }
+                if ($user->status_id == Status::GET[Status::ASK_PHONE]) {
+                    $this->setName($user, $data["message"]['text'], Status::GET[Status::ASK_PHONE]);
                     return 1;
                 }
                 if ($data["message"]['text'] == "/restore") {

@@ -42,7 +42,7 @@ function lang($locale, $key)
             "location_text" => '"Iltimos, “📍 Geolokatsiyani jo’natish” tugmasini bosish orqali geolokatsiyangizni yuboring. Bunda telefoningizda manzilni aniqlash funksiyasi yoqilgan bo’lishi lozim."',
             "re_location" => "📍 Geolatsiyani qayta jo'natish",
             "your_address" => "Sizning manzilingiz",
-            "correct_address"   => "XURMATLI MIJOZ, ILTIMOS YASHASH MANZILINGIZNI YOZMA RAVISHDA ANIK VA TO'G'RI YOZING !",
+            "correct_address"   => "HURMATLI MIJOZ! ILTIMOS, YASHASH MANZILINGIZNI YOZMA RAVISHDA ANIQ VA TO'G'RI YOZING !",
             "next" => "➡️ Keyingi"
 
         ],
@@ -80,7 +80,7 @@ function lang($locale, $key)
             "location_text" => '"Iltimos, “📍 Geolokatsiyani jo’natish” tugmasini bosish orqali geolokatsiyangizni yuboring. Bunda telefoningizda manzilni aniqlash funksiyasi yoqilgan bo’lishi lozim."',
             "re_location" => "📍 Geolatsiyani qayta jo'natish",
             "your_address" => "Manzilingizni yozma ravishda kiriting!",
-            "correct_address"   => "XURMATLI MIJOZ ILTIMOS YASHASH MANZILINGIZNI YOZMA RAVISHDA ANIK VA TUGRI YOZING !",
+            "correct_address"   => "HURMATLI MIJOZ! ILTIMOS, YASHASH MANZILINGIZNI YOZMA RAVISHDA ANIQ VA TO'G'RI YOZING !",
             "next" => "➡️ Keyingi"
         ],
         'en' => [
