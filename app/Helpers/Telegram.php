@@ -497,7 +497,6 @@ class Telegram
     public function history($user, $message_id, $callback_query_id, $id)
     {
 
-        $this->deleteMessage($user->telegram_id, $message_id);
         DB::beginTransaction();
 
         try {
@@ -508,6 +507,7 @@ class Telegram
                 $this->answerCallbackQuery($callback_query_id, lang("uz", 'no_orders'));
                 return 1;
             }
+            $this->deleteMessage($user->telegram_id, $message_id);
             foreach ($orders as $order) {
 
                 $order_product = OrderProduct::query()
