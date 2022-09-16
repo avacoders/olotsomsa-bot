@@ -7,7 +7,7 @@ function lang($locale, $key)
 
     $keys = [
         'uz' => [
-            "hi" => "ASSALOMU ALAYKUM. TO'LIQ ISMINGIZNI KIRITING",
+            "hi" => "TO'LIQ ISMINGIZNI KIRITING",
             "ask_phone1" => "TELEFON RAQAMINGIZNI KIRITING:",
             "ask_phone2" => "MASALAN:",
             "code1" => "USHBU ",
