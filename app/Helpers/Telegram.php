@@ -57,18 +57,6 @@ class Telegram
                         "text" => "📝 Telefon raqamni o'zgartirish",
                         "callback_data" => "phone"
                     ]
-                ],
-                [
-                    [
-                        "text" => "📝 Manzilni o'zgartirish",
-                        "callback_data" => "location"
-                    ]
-                ],
-                [
-                    [
-                        "text" => "🔙 Orqaga",
-                        "callback_data" => "back"
-                    ]
                 ]
             ]
         ];
