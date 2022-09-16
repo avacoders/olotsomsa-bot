@@ -776,6 +776,7 @@ class Telegram
     {
         DB::beginTransaction();
         try {
+            Log::debug($user);
             if ($user) {
                 if ($user->status_id == Status::GET[Status::COMMENT]) {
                     $order = $user->orders()->where('status_id', Order::STATUS_NEW)->latest()->first();

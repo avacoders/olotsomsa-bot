@@ -35,7 +35,6 @@ class WebhookController extends Controller
 
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
 
-        Log::debug($chat_id);
         $user = User::where('telegram_id',$chat_id)->first();
 
         if (isset($data['message']) && isset($data['message']['text'])) {
