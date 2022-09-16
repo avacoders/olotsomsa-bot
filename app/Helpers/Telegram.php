@@ -651,9 +651,9 @@ class Telegram
             }
             DB::commit();
         } catch (\Exception $exception) {
+            Log::debug($exception);
             $this->sendMenu($user);
             DB::rollBack();
-            Log::debug($exception);
 
         }
     }
