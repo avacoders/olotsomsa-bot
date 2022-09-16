@@ -540,7 +540,8 @@ class Telegram
 
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->telegram_id);
+            Log:debug($exception);
+            $this->sendMenu($user);
             DB::rollBack();
         }
 
