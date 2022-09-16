@@ -497,71 +497,45 @@ class Telegram
     public function history($user, $message_id, $callback_query_id, $id)
     {
 
+        $this->deleteMessage($user->telegram_id, $message_id);
         DB::beginTransaction();
 
         try {
 
             $orders = $user->orders()->where("status_id", Order::STATUS_COMPLETE)->get();
-            $order = $id == 1 || count($orders) ? $orders[0] : Order::find($id);
 
             if (!count($orders)) {
                 $this->answerCallbackQuery($callback_query_id, lang("uz", 'no_order'));
                 return 1;
             }
+            foreach ($orders as $order) {
 
+                $order_product = OrderProduct::query()
+                    ->where('order_id', $order->id)
+                    ->where('status_id', OrderProduct::STATUS_BASKET)->get();
 
-            $order_product = OrderProduct::query()
-                ->where('order_id', $order->id)
-                ->where('status_id', OrderProduct::STATUS_BASKET)->get();
+                if (count($order_product)) {
+                    $text = "Buyurtma № $order->id \n";
+                    $text = "Buyurtma vaqti: $order->created_at \n";
 
-            if (count($order_product)) {
-                $text = "Buyurtma № $order->id \n";
-                $text = "Buyurtma vaqti: $order->created_at \n";
-
-                $sum = 0;
-                $price = 1;
-                $i = 0;
-                foreach ($order_product as $product) {
-                    $i++;
-                    $price = $product->product->price * $product->quantity;
-                    $sum += $price;
-                    $text .= "$i. <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " so'm = " . $price . " so'm \n";
-                }
-
-                $text .= "\n" . lang("uz", 'general') . ": $sum so'm \n";
-
-                $buttons = [
-                    'inline_keyboard' => []
-                ];
-
-                if (count($orders) > 1) {
-                    $next = 0;
-                    $prev = 0;
-                    foreach ($orders as $key => $item) {
-                        if ($item->id == $id) {
-                            $next = $orders[$key + 1]->id;
-                            $prev = $orders[$key + 1]->id;
-                        }
+                    $sum = 0;
+                    $price = 1;
+                    $i = 0;
+                    foreach ($order_product as $product) {
+                        $i++;
+                        $price = $product->product->price * $product->quantity;
+                        $sum += $price;
+                        $text .= "$i. <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " so'm = " . $price . " so'm \n";
                     }
-                    $buttons['inline_keyboard'][] =
-                        [
-                            [
-                                'text' => 'Prev',
-                                'callback_data' => 'history|' . $prev
-                            ],
-                            [
-                                'text' => 'Next',
-                                'callback_data' => 'history|' . $next
-                            ]
-                        ];
+
+                    $text .= "\n" . lang("uz", 'general') . ": $sum so'm \n";
+                    $this->sendMessage($user->telegram_id, $text);
+                } else {
+                    $this->answerCallbackQuery($callback_query_id, lang("uz", 'empty'));
                 }
 
-
-                $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'back'), 'menu|1');
-                $this->editMessage($user->telegram_id, $message_id, $text, json_encode($buttons));
-            } else {
-                $this->answerCallbackQuery($callback_query_id, lang("uz", 'empty'));
             }
+
 
 
             DB::commit();
