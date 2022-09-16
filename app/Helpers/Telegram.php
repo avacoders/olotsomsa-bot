@@ -1295,6 +1295,7 @@ class Telegram
 
     public function sendVerification($user, $contact, $status = STATUS::GET[Status::PHONE_NUMBER])
     {
+        Log::debug($status);
         $contact = preg_replace('/[^0-9.]+/', '', $contact);
 
 
