@@ -43,7 +43,7 @@ class OrderService
         $user = $user ?? $this->telegram->saveData($data);
         $commands = explode('|', $query['data']);
         $command = $commands[0];
-        $id = $commands[1];
+        $id = isset($commands[1]) ? $commands[1]: null;
         $product = isset($commands[2]) ? $commands[2] : '';
         $message_id = $query['message']['message_id'];
         $callback_id = $query['id'];
