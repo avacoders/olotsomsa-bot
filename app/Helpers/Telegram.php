@@ -765,8 +765,8 @@ class Telegram
 
         if ($order->status_id != Order::STATUS_COMPLETE) {
             $text = lang($user->language_code,"accepted1")." $order->delivery_minute". lang($user->language_code,"accepted2");
-            $text .= "\nDOSTAVKA <b>$order->delivery_price 💵</b>\n";
-            $text .= "\nPOSUDA <b><i>$order->posuda</i></b> 💵 \n";
+            $text .= "\n".lang($user->language_code,"delivery")." <b>$order->delivery_price 💵</b>\n";
+            $text .= "\n".lang($user->language_code,"idish")."  <b><i>$order->posuda</i></b> 💵 \n";
             $order_product = OrderProduct::query()
                 ->where('order_id', $order->id)
                 ->where('status_id', OrderProduct::STATUS_BASKET)->get();
@@ -783,9 +783,9 @@ class Telegram
 
                 $sum += $order->delivery_price;
                 $sum += $order->posuda;
-                $text .= "\n<b>Umumiy</b>: $sum 💵";
+                $text .= "\n<b>".lang($user->language_code,"general")."</b>: $sum 💵";
                 $text .= "\n<b>☎️</b>: $user->phone_number";
-                $text .= "\n<b>IZOH</b>: $order->comment";
+                $text .= "\n<b>".lang($user->language_code,"comment")."</b>: $order->comment";
 
                 $this->sendMessage($user->telegram_id, $text);
                 $this->changeOrderStatus($message_id, $id, Order::STATUS_COMPLETE);

@@ -59,7 +59,9 @@ function lang($locale, $key)
             "accepted1" => "Buyurtmangiz tayyorlanish jarayonida. Sizga ",
             "accepted2" => " 60 daqiqada yetkazib beramiz",
             "cancelled" => "Buyurtmangiz bekor qilindi",
-            "umumiy" => "Umumiy",
+            "dostavka" => "YETKAZIB BERISH",
+            "idish" => "POSUDA",
+
 
         ],
         'ru' => [
@@ -118,6 +120,9 @@ function lang($locale, $key)
             "accepted2" => " минут",
             "cancelled" => "Ваш заказ отменен",
             "umumiy" => "Всего",
+            "dostavka" => "ДОСТАВКА",
+            "idish" => "POSUDA",
+
         ],
         'en' => [
             "hi" => "ASSALOMU ALAYKUM. ILTIMOS TO'LIQ ISMINGIZNI KIRITING",
