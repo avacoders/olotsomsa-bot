@@ -163,7 +163,7 @@ class OrderService
 
     public function setPhoneNumber($user, $message)
     {
-        if ($this->telegram->validatePhoneNumber($user, $message)) {
+        if ($this->telegram->validatePhoneNumber($user, (string) $message)) {
             $user->phone_number = $message;
             $user->status_id = Status::GET[Status::VERIFICATION1];
             $user->save();
