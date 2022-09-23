@@ -98,6 +98,8 @@ class OrderService
             case "name":
                 $this->askNameForChange($user);
                 break;
+            case "phone":
+                $this->askPhoneForChange($user);
         }
     }
 
@@ -119,6 +121,9 @@ class OrderService
             case Status::GET[Status::ASK_NAME]:
                 $this->setName($user, $message);
                 break;
+            case Status::GET[Status::ASK_PHONE]:
+                $this->setPhoneNumber($user, $message);
+                break;
 
         }
     }
@@ -130,7 +135,6 @@ class OrderService
         $user->save();
         $this->telegram->settings($user);
     }
-
 
     public function setNameAndContinue($user, $message)
     {
@@ -153,6 +157,17 @@ class OrderService
             $this->telegram->sendVerification($user, $message);
         }
     }
+
+    public function setPhoneNumber($user, $message)
+    {
+        if ($this->telegram->validatePhoneNumber($user, $message)) {
+            $user->phone_number = $message;
+            $user->status_id = Status::GET[Status::VERIFICATION1];
+            $user->save();
+            $this->telegram->sendVerification($user, $message);
+        }
+    }
+
 
     public function setVerificationAndContinue($user, $message)
     {
@@ -329,6 +344,14 @@ class OrderService
     {
         $text = "Ismingizni kiriting";
         $user->status_id = Status::GET[Status::ASK_NAME];
+        $user->save();
+        $this->telegram->sendMessage($user->telegram_id, $text);
+    }
+
+    public function askPhoneForChange($user)
+    {
+        $text = "Telefon raqamingizni kiriting";
+        $user->status_id = Status::GET[Status::ASK_PHONE];
         $user->save();
         $this->telegram->sendMessage($user->telegram_id, $text);
     }
