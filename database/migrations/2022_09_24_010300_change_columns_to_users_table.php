@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('email')->nullable()->change();
-            $table->bigInteger('telegram_id')->unique();
+            $table->bigInteger('telegram_id')->default(0);
         });
     }
 
