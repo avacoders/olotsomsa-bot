@@ -184,12 +184,16 @@ class OrderService
         if ($user->verification_code != $message) {
             $text = lang($user->language_code, "error");
             $this->telegram->sendMessage($user, $text);
+            return 1;
         }
         if ($user->verification_expires_at < now()) {
             $text = lang($user->language_code, "expired");
             $this->telegram->sendMessage($user, $text);
+            return 1;
         }
         $this->telegram->settings($user);
+        return 1;
+
     }
 
     public function setVerificationAndContinue($user, $message)

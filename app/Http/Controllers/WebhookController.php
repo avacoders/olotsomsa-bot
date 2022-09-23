@@ -34,7 +34,6 @@ class WebhookController extends Controller
     public function index(Request $request)
     {
         $data = $request->all();
-        Log::debug($data);
         $call_id = isset($data['callback_query']) ? $data['callback_query']['message']['chat']['id'] : '';
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
         $user = User::where('telegram_id', $chat_id)->first();
