@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 class OrderService
 {
     protected $telegram;
-    protected $exception_commands = ["lang", "confirm", "payment", "history","change_lang","phone"];
+    protected $exception_commands = ["lang", "confirm", "payment", "history", "change_lang", "phone"];
 
     public function __construct()
     {
@@ -31,7 +31,7 @@ class OrderService
             else
                 $this->askLang($chat_id);
         }
-        if($message == "/settings")
+        if ($message == "/settings")
             $this->telegram->settings($user);
         $this->answerByStatus($user, $message);
 
@@ -43,7 +43,7 @@ class OrderService
         $user = $user ?? $this->telegram->saveData($data);
         $commands = explode('|', $query['data']);
         $command = $commands[0];
-        $id = isset($commands[1]) ? $commands[1]: null;
+        $id = isset($commands[1]) ? $commands[1] : null;
         $product = isset($commands[2]) ? $commands[2] : '';
         $message_id = $query['message']['message_id'];
         $callback_id = $query['id'];
@@ -116,8 +116,19 @@ class OrderService
             case Status::GET[Status::COMMENT]:
                 $this->setComment($user, $message);
                 break;
+            case Status::GET[Status::ASK_NAME]:
+                $this->setName($user, $message);
+                break;
 
         }
+    }
+
+    public function setName($user, $message)
+    {
+        $user->name = $message;
+        $user->no_name = 1;
+        $user->save();
+        $this->telegram->settings($user);
     }
 
 
@@ -261,7 +272,6 @@ class OrderService
     }
 
 
-
     public function payment($user, $id)
     {
         DB::beginTransaction();
@@ -314,6 +324,7 @@ class OrderService
         $user->save();
         $this->telegram->sendMessage($user->telegram_id, $text);
     }
+
     public function askNameForChange($user)
     {
         $text = "Ismingizni kiriting";
