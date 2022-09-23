@@ -119,7 +119,7 @@ class OrderService
                 $text = lang("uz", 'your_address') . ": $location1->text \n\n";
                 $text .= lang("uz", 'correct_address');
 
-                $this->telegram->sendMessageWithButtons($user->id, $text, json_encode($buttons));
+                $this->telegram->sendMessageWithButtons($user->telegram_id, $text, json_encode($buttons));
             } else {
                 $this->sendMenu($user->id);
             }
