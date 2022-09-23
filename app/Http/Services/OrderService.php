@@ -3,6 +3,9 @@
 namespace App\Http\Services;
 
 use App\Helpers\Telegram;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Status;
 
 class OrderService
 {
@@ -23,7 +26,33 @@ class OrderService
             else
                 $this->askLang($chat_id);
         }
+        $this->answerByStatus($user, $message);
+
     }
+
+    public function answerByStatus($user, $message)
+    {
+        switch($user->status_id)
+        {
+            case Status::GET[Status::NAME]:
+                $this->setNameAndContinue($user, $message);
+                break;
+        }
+    }
+
+    public function setNameAndContinue($user, $message)
+    {
+        $user->name = $message;
+        $user->no_name = 1;
+        $user->save();
+        if(!$user->phone_number)
+        {
+            $this->askPhone($user);
+        }else{
+            $this->askLocation($user);
+        }
+    }
+
 
 
     public function sendMenu($user)
@@ -84,8 +113,72 @@ class OrderService
             case 'lang':
                 $this->setLang($user, $id);
                 break;
+            case "confirm":
+                $this->confirm($user, $id);
+                break;
         }
     }
 
+    public function confirm($user, $id)
+    {
+        if(!$user->no_name)
+        {
+            $this->askName($user);
+            return 0;
+        }
+    }
 
+    public function askName($user)
+    {
+        $text = "Ismingizni kiriting";
+        $user->status_id = Status::GET[Status::NAME];
+        $user->save();
+        $this->telegram->sendMessage($user->telegram_id, $text);
+    }
+    public function askPhone($user)
+    {
+        $text = "Telefon raqamingizni kiriting";
+        $user->status_id = Status::GET[Status::PHONE_NUMBER];
+        $user->save();
+        $this->telegram->sendMessage($user->telegram_id, $text);
+    }
+
+
+    public function makeText($order, $user)
+    {
+
+        $order_product = OrderProduct::query()
+            ->where('order_id', $order->id)
+            ->where('status_id', OrderProduct::STATUS_BASKET)->get();
+
+        $location = $order->location->text;
+        $text = "ЗАКАЗ: $order->id    $user->name   \n";
+        if (count($order_product)) {
+
+            $sum = $order->delivery_price;
+            $sum += $order->posuda;
+
+            $price = 1;
+            foreach ($order_product as $product) {
+                $price = $product->product->price * $product->quantity;
+                $sum += $price;
+
+                $text .= "<b>" . $product->product->name . "  $product->quantity x " . $product->product->price . " = " . $price . "</b>\n";
+            }
+
+            $link = "https://yandex.uz/maps/?ll=" . $order->location->latitude . "%2C" . $order->location->longitude . "&mode=routes&rtext=~" . $order->location->latitude . "%2C" . $order->location->longitude . "&rtt=pd&ruri=~&z=13.78";
+            $text .= "\n<b>🏘 📍: $location <a href='$link'>link</a>";
+            $text .= "\n\nМИНУТ: <i>$order->delivery_minute </i>  🚕  ДОСТАВКА";
+            $text .= "\nДОСТАВКА 🚀 <i>: $order->delivery_price</i> СЎМ";
+            $text .= "\nПОСУДА  <i>$order->posuda</i>  СЎМ";
+            $text .= "\n\n☎️️:  +$user->phone_number";
+            $text .= "\n\nКОМЕНТАРИ 📝:   $order->comment";
+            $status = Order::GET[$order->status_id];
+            $text .= "\n\nСТАТУС: $status";
+            $type = Order::GET_TYPE[$order->type];
+            $text .= "\nТЎЛОВ ТУРИ:  $type";
+            $text .= "\n\nЖАМИ СУММА: $sum</b>";
+        }
+        return $text;
+    }
 }

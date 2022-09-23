@@ -216,7 +216,7 @@ class Telegram
                 $buttons = [
                     'inline_keyboard' => []
                 ];
-                $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|1');
+                $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|' . $order->id);
                 $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
             } else {
                 $this->sendMessage($user->telegram_id, lang('uz', 'empty'));
@@ -1604,18 +1604,6 @@ class Telegram
                 }
                 DB::commit();
                 return $existing_user;
-//                $chat = $data['chat'];
-//                $existing_chat = Chat::find($chat['id']);
-//                if ($existing_chat)
-//                    $existing_chat->update($chat);
-//                else
-//                    Chat::create($chat);
-//                $message = [
-//                    'from_id' => $user['id'],
-//                    'chat_id' => $chat['id'],
-//                    'text' => isset($data['text']) ? $data['text'] : ''
-//                ];
-//                Message::create($message);
 
             } catch
             (\Exception $exception) {
