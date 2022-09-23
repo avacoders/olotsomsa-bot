@@ -1179,7 +1179,7 @@ class Telegram
 
     public function validatePhoneNumber($user, $phone_number)
     {
-        $contact = preg_replace('/[^0-9.]+/', '', $phone_number);
+        $contact = (int) preg_replace('/[^0-9.]+/', '', $phone_number);
         $code5 =  substr($contact, 0, 5);
         $code5 = preg_replace('/[^0-9.]+/', '', $code5);
         Log::debug($contact);
