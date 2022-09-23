@@ -39,12 +39,16 @@ class OrderService
             case Status::GET[Status::PHONE_NUMBER]:
                 $this->setPhoneNumberAndContinue($user, $message);
                 break;
+            case Status::GET[Status::VERIFICATION]:
+                $this->setVerificationAndContinue($user, $message);
+                break;
+
         }
     }
 
     public function setPhoneNumberAndContinue($user, $message)
     {
-        if($this->telegram->validatePhoneNumber($user, $message)) {
+        if ($this->telegram->validatePhoneNumber($user, $message)) {
             $user->phone_number = $message;
             $user->status_id = Status::GET[Status::VERIFICATION];
             $user->save();
@@ -60,7 +64,25 @@ class OrderService
         if (!$user->phone_number) {
             $this->askPhone($user);
         } else {
-            $this->askLocation($user);
+            $this->askLocationAndContinue($user);
+        }
+    }
+
+    public function setVerificationAndContinue($user, $message)
+    {
+        if($user->verification_code != $message)
+        {
+            $text = "Kiritilgan kod noto'g'ri. Iltimos qayta kiriting";
+            $this->telegram->sendMessage($user, $text);
+        }
+        if($user->verification_expires_at < now())
+        {
+            $text = "Kod muddati tugagan. Iltimos qayta kiriting";
+            $this->telegram->sendMessage($user, $text);
+        }
+        else
+        {
+            $this->askLocationAndContinue($user);
         }
     }
 
@@ -151,6 +173,23 @@ class OrderService
         $user->status_id = Status::GET[Status::PHONE_NUMBER];
         $user->save();
         $this->telegram->sendMessage($user->telegram_id, $text);
+    }
+
+    public function askLocationAndContinue($user)
+    {
+        $text = "Manzilingizni kiriting";
+        $user->status_id = Status::GET[Status::LOCATION_SELECT];
+        $user->save();
+        $location = [
+            'text' => lang("uz", 'geolocation'),
+            'request_location' => true
+        ];
+        $buttons = [
+            'keyboard' => [],
+            'resize_keyboard' => true,
+        ];
+        $buttons['keyboard'][] = [$location];
+        $this->telegram->sendMessageWithButtons($user->telegram_id, $text, json_encode($buttons));
     }
 
 
