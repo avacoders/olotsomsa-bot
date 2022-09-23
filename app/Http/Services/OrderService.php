@@ -15,11 +15,13 @@ class OrderService
 
     public function answer($user, $message, $data)
     {
+        $call_id = isset($data['callback_query']) ? $data['callback_query']['message']['chat']['id'] : '';
+        $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
         if($message == "/start") {
             if($user)
                 $this->sendMenu($user);
             else
-                $this->askLang($user, $data);
+                $this->askLang($chat_id);
         }
     }
 
@@ -41,10 +43,8 @@ class OrderService
         $this->telegram->sendButtons($user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
     }
 
-    public function askLang($user, $data)
+    public function askLang($user_id)
     {
-        if (!$user)
-            $user = $this->telegram->saveData($data);
         $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
         $buttons = [
             "remove_keyboard" => true,
@@ -61,7 +61,7 @@ class OrderService
                 ]
             ]
         ];
-        $this->telegram->sendButtons($user->telegram_id, $text, json_encode($buttons));
+        $this->telegram->sendButtons($user_id, $text, json_encode($buttons));
     }
 
 
