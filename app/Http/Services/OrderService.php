@@ -182,11 +182,11 @@ class OrderService
     public function setVerification($user, $message)
     {
         if ($user->verification_code != $message) {
-            $text = "Kiritilgan kod noto'g'ri. Iltimos qayta kiriting";
+            $text = lang($user->language_code, "error");
             $this->telegram->sendMessage($user, $text);
         }
         if ($user->verification_expires_at < now()) {
-            $text = "Kod muddati tugagan. Iltimos qayta kiriting";
+            $text = lang($user->language_code, "expired");
             $this->telegram->sendMessage($user, $text);
         }
         $this->telegram->settings($user);
@@ -195,11 +195,11 @@ class OrderService
     public function setVerificationAndContinue($user, $message)
     {
         if ($user->verification_code != $message) {
-            $text = "Kiritilgan kod noto'g'ri. Iltimos qayta kiriting";
+            $text = lang($user->language_code, "error");
             $this->telegram->sendMessage($user, $text);
         }
         if ($user->verification_expires_at < now()) {
-            $text = "Kod muddati tugagan. Iltimos qayta kiriting";
+            $text = lang($user->language_code, "expired");
             $this->telegram->sendMessage($user, $text);
         }
         $this->askLocationAndContinue($user);
@@ -226,8 +226,8 @@ class OrderService
 
                 $user->status_id = Status::GET[Status::COMMENT];
                 $user->save();
-                $text = lang("uz", 'your_address') . ": $location1->text \n\n";
-                $text .= lang("uz", 'correct_address');
+                $text = lang($user->language_code, 'your_address') . ": $location1->text \n\n";
+                $text .= lang($user->language_code, 'correct_address');
                 $buttons = [
                     "remove_keyboard" => true
                 ];
@@ -262,7 +262,7 @@ class OrderService
         $buttons = [
             'inline_keyboard' => [
                 [
-                    ["text" => "Buyurtma berish",
+                    ["text" => lang($user->language_code, "menu1"),
                         "web_app" => [
                             "url" => "https://telegram.olotsomsa.com/bot/app"
                         ]
@@ -316,7 +316,7 @@ class OrderService
                 $order->posuda = 0;
                 $order->type = $id;
                 $order->save();
-                $text = "$order->id  raqamli buyurtmangiz qabul qilindi! Iltimos, operator javobini kuting. Buyurtmangizni yetkazib berish vaqti va pulini tez orada ma'lum qilamiz!  ";
+                $text = "$order->id  " . lang($user->language_code, 'order') . " \n\n";
                 $this->telegram->sendMessage($user->telegram_id, $text);
                 $text = $this->makeText($order, $user);
                 $buttons = $this->buttons($order);
@@ -357,7 +357,7 @@ class OrderService
 
     public function askNameForChange($user)
     {
-        $text = "Ismingizni kiriting";
+        $text = lang($user->language_code, 'hi');
         $user->status_id = Status::GET[Status::ASK_NAME];
         $user->save();
         $this->telegram->sendMessage($user->telegram_id, $text);
@@ -365,11 +365,11 @@ class OrderService
 
     public function askPhoneForChange($user)
     {
-        $text = "Telefon raqamingizni kiriting";
+        $text = lang($user->language_code, 'ask_phone1')." \n\n".lang($user->language_code, 'ask_phone2')." \n\n998903911755";
         $user->status_id = Status::GET[Status::ASK_PHONE];
         $user->save();
         $contact = [
-            'text' => lang("uz", 'phone'),
+            'text' => lang($user->language_code, 'phone'),
             'request_contact' => true
         ];
         $buttons = [
@@ -382,11 +382,11 @@ class OrderService
 
     public function askPhone($user)
     {
-        $text = "Telefon raqamingizni kiriting";
+        $text = lang($user->language_code, 'ask_phone1')." \n\n".lang($user->language_code, 'ask_phone2')." \n\n998903911755";
         $user->status_id = Status::GET[Status::PHONE_NUMBER];
         $user->save();
         $contact = [
-            'text' => lang("uz", 'phone'),
+            'text' => lang($user->language_code, 'phone'),
             'request_contact' => true
         ];
         $buttons = [
@@ -401,7 +401,7 @@ class OrderService
         $user->status_id = Status::GET[Status::LOCATION_SELECT];
         $user->save();
         $location = [
-            'text' => lang("uz", 'geolocation'),
+            'text' => lang("$user->language_code", 'geolocation'),
             'request_location' => true
         ];
         $buttons = [
@@ -458,7 +458,7 @@ class OrderService
             $buttons = [
                 "remove_keyboard" => true
             ];
-            $this->telegram->sendMessageWithButtons($user->telegram_id, "ILTIMOS BUYURTMANGIZNI YANA BIR BOR KO'ZDAN KECHIRING", json_encode($buttons));
+            $this->telegram->sendMessageWithButtons($user->telegram_id, lang($user->language_code, "check"), json_encode($buttons));
 
             $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
 
@@ -483,11 +483,11 @@ class OrderService
                 $text .= "\n<b>Geolokatsiya</b>: $location";
                 $text .= "\n\n<b>Telefon raqam</b>: $user->phone_number";
                 $text .= "\n\n<b>IZOH</b>: $order->comment";
-                $text .= "\n\nTo'lov usulini tanlang\n";
+                $text .= "\n\n".lang($user->language_code,"payment")."\n";
 
 
-                $buttons['inline_keyboard'][] = $this->telegram->makeButton(lang("uz", 'confirm3'), 'payment|' . Order::TYPE_CASH);
-                $buttons['inline_keyboard'][] = $this->telegram->makeButton(lang("uz", 'confirm2'), 'payment|' . Order::TYPE_CARD);
+                $buttons['inline_keyboard'][] = $this->telegram->makeButton(lang($user->language_code, 'confirm3'), 'payment|' . Order::TYPE_CASH);
+                $buttons['inline_keyboard'][] = $this->telegram->makeButton(lang($user->language_code, 'confirm2'), 'payment|' . Order::TYPE_CARD);
                 $user->status_id = Status::GET[Status::PAYMENT];
                 $user->save();
                 $this->telegram->sendMessageWithButtons($user->telegram_id, $text, json_encode($buttons));

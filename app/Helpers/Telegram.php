@@ -38,10 +38,10 @@ class Telegram
 
     public function settings($user)
     {
-        $text = "🔧 Sozlamalar / Profil \n\n";
-        $text .= "👤 Ism: " . $user->name . "\n";
-        $text .= "📞 Telefon raqam: " . $user->phone_number . "\n" ?? "No'malum" . "\n";
-        $text .= "🔄 Til: " . $user->lang . "\n";
+        $text = "🔧 ".lang($user->language_code,"settings")." \n\n";
+        $text .= "👤 ".lang($user->language_code, "name").": " . $user->name . "\n";
+        $text .= "📞 ".lang($user->language_code, "telefon")." " . $user->phone_number . "\n" ?? "No'malum" . "\n";
+        $text .= "🔄 ".lang($user->language_code, "til").": " . $user->lang . "\n";
         $text .= "🆔 ID: " . $user->telegram_id . "\n";
         $user->status_id = Status::GET[Status::NORMAL];
         $user->save();
@@ -50,25 +50,25 @@ class Telegram
             "inline_keyboard" => [
                 [
                     [
-                        "text" => "📝 Tilni o'zgartirish",
+                        "text" => "📝 ".lang($user->language_code, "change_til"),
                         "callback_data" => "change_lang"
                     ]
                 ],
                 [
                     [
-                        "text" => "📝 Telefon raqamni o'zgartirish",
+                        "text" => "📝 ".lang($user->language_code, "change_phone"),
                         "callback_data" => "phone"
                     ]
                 ],
                 [
                     [
-                        "text" => "📝 Ismni o'zgartirish",
+                        "text" => "📝 ".lang($user->language_code, "change_name"),
                         "callback_data" => "name"
                     ]
                 ],
                 [
                     [
-                        "text" => "🗒 Buyurtmalar tarixi",
+                        "text" => "🗒 ".lang($user->language_code, "history"),
                         "callback_data" => "history"
                     ]
                 ]
