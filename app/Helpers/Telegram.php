@@ -1586,10 +1586,9 @@ class Telegram
 
     public function saveData($data)
     {
-        if (isset($data['message'])) {
             try {
                 DB::beginTransaction();
-                $data = $data['message'];
+                $data = isset($data['message']) ? $data['message']: $data['callback_query'];
 
                 $user = $data['from'];
                 $user1['name'] = $user["first_name"];
@@ -1625,7 +1624,6 @@ class Telegram
                 return $exception;
 
             }
-        }
 
 
     }
