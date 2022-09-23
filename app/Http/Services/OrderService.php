@@ -46,6 +46,9 @@ class OrderService
             case Status::GET[Status::VERIFICATION]:
                 $this->setVerificationAndContinue($user, $message);
                 break;
+            case Status::GET[Status::COMMENT]:
+                $this->setComment($user, $message);
+                break;
 
         }
     }
@@ -62,6 +65,7 @@ class OrderService
             $this->askLocationAndContinue($user);
         }
     }
+
     public function setPhoneNumberAndContinue($user, $message)
     {
         if ($this->telegram->validatePhoneNumber($user, $message)) {
@@ -84,7 +88,6 @@ class OrderService
         }
         Log::debug(123);
         $this->askLocationAndContinue($user);
-
     }
 
     public function setLocation($user, $location)
@@ -92,7 +95,8 @@ class OrderService
         DB::beginTransaction();
         try {
             $geolocation = new Geolocation();
-            $address = $geolocation->Get_Address_From_Google_Maps($location['latitude'], $location['longitude']);$order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
+            $address = $geolocation->Get_Address_From_Google_Maps($location['latitude'], $location['longitude']);
+            $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
             if ($order) {
                 $location1 = Location::create([
                     'user_id' => $user->id,
@@ -130,8 +134,18 @@ class OrderService
             Log::debug($exception);
 
         }
+    }
 
-
+    public function setComment($user, $message)
+    {
+        $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
+        if ($order) {
+            $order->comment = $message;
+            $order->save();
+            $this->checkOrder($user);
+        }else{
+            $this->sendMenu($user);
+        }
     }
 
 
@@ -148,7 +162,7 @@ class OrderService
                 ]
             ]
         ];
-        $this->telegram->sendButtons($user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
+        $this->telegram->sendMessageWithButtons($user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
     }
 
     public function askLang($user_id)
@@ -169,7 +183,7 @@ class OrderService
                 ]
             ]
         ];
-        $this->telegram->sendButtons($user_id, $text, json_encode($buttons));
+        $this->telegram->sendMessageWithButtons($user_id, $text, json_encode($buttons));
     }
 
     public function setLang($user, $lang)
@@ -277,4 +291,55 @@ class OrderService
         }
         return $text;
     }
+    public function checkOrder($user)
+    {
+        DB::beginTransaction();
+        try {
+            $buttons = [
+                "remove_keyboard" => true
+            ];
+            $this->telegram->sendMessageWithButtons($user->telegram_id, "ILTIMOS BUYURTMANGIZNI YANA BIR BOR KO'ZDAN KECHIRING", json_encode($buttons));
+
+            $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
+
+            $order_product = OrderProduct::query()
+                ->where('order_id', $order->id)
+                ->where('status_id', OrderProduct::STATUS_BASKET)->get();
+
+            $location = $order->location->text;
+            if (count($order_product)) {
+                $text = "";
+
+                $sum = 0;
+                $price = 1;
+                foreach ($order_product as $product) {
+                    $price = $product->product->price * $product->quantity;
+                    $sum += $price;
+
+                    $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
+                }
+
+                $text .= "\n<b>Umumiy</b>: $sum so'm";
+                $text .= "\n<b>Geolokatsiya</b>: $location";
+                $text .= "\n\n<b>Telefon raqam</b>: $user->phone_number";
+                $text .= "\n\n<b>IZOH</b>: $order->comment";
+                $text .= "\n\nTo'lov usulini tanlang\n";
+
+
+                $buttons['inline_keyboard'][] = $this->telegram->makeButton(lang("uz", 'confirm3'), 'payment|' . Order::TYPE_CASH);
+                $buttons['inline_keyboard'][] = $this->telegram->makeButton(lang("uz", 'confirm2'), 'payment|' . Order::TYPE_CARD);
+                $user->status_id = Status::GET[Status::PAYMENT];
+                $user->save();
+                $this->telegram->sendMessageWithButtons($user->telegram_id, $text, json_encode($buttons));
+            }
+            DB::commit();
+        } catch (\Exception $exception) {
+            Log::debug($exception);
+            DB::rollBack();
+            $this->sendMenu($user);
+        }
+
+
+    }
+
 }

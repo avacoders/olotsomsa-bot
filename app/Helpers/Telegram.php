@@ -716,56 +716,6 @@ class Telegram
     }
 
 
-    public function checkOrder($user)
-    {
-        DB::beginTransaction();
-        try {
-            $buttons = [
-                "remove_keyboard" => true
-            ];
-            $this->sendButtons($user->telegram_id, "ILTIMOS BUYURTMANGIZNI YANA BIR BOR KO'ZDAN KECHIRING", json_encode($buttons));
-
-            $order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
-
-            $order_product = OrderProduct::query()
-                ->where('order_id', $order->id)
-                ->where('status_id', OrderProduct::STATUS_BASKET)->get();
-
-            $location = $order->location->text;
-            if (count($order_product)) {
-                $text = "";
-
-                $sum = 0;
-                $price = 1;
-                foreach ($order_product as $product) {
-                    $price = $product->product->price * $product->quantity;
-                    $sum += $price;
-
-                    $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
-                }
-
-                $text .= "\n<b>Umumiy</b>: $sum so'm";
-                $text .= "\n<b>Geolokatsiya</b>: $location";
-                $text .= "\n\n<b>Telefon raqam</b>: $user->phone_number";
-                $text .= "\n\n<b>IZOH</b>: $order->comment";
-                $text .= "\n\nTo'lov usulini tanlang\n";
-
-
-                $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'confirm3'), 'payment|' . Order::TYPE_CASH);
-                $buttons['inline_keyboard'][] = $this->makeButton(lang("uz", 'confirm2'), 'payment|' . Order::TYPE_CARD);
-                $user->status_id = Status::GET[Status::PAYMENT];
-                $user->save();
-                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
-            }
-            DB::commit();
-        } catch (\Exception $exception) {
-            Log::debug($exception);
-            DB::rollBack();
-            $this->sendMenu($user);
-        }
-
-
-    }
 
 
     public function base($user, $data)
