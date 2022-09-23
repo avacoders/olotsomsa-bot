@@ -223,11 +223,11 @@ class OrderService
 
                 $this->telegram->sendMessage($user->telegram_id, $text);
             } else {
-                $this->sendMenu($user->id);
+                $this->sendMenu($user);
             }
             DB::commit();
         } catch (\Exception $exception) {
-            $this->sendMenu($user->id);
+            $this->sendMenu($user);
             DB::rollBack();
             Log::debug($exception);
 
