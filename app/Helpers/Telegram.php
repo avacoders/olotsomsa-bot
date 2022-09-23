@@ -1358,7 +1358,7 @@ class Telegram
     public function sendButtons($chat_id, $message, $button)
     {
         $result = $this->http::post(self::url . $this->bot . '/sendMessage', [
-            'chat_id' => $chat_id,
+            'chat_id' => (int) $chat_id,
             'text' => $message,
             'reply_markup' => $button,
             'parse_mode' => 'html',
