@@ -64,7 +64,26 @@ class OrderService
         $this->telegram->sendButtons($user_id, $text, json_encode($buttons));
     }
 
+    public function setLang($user, $lang)
+    {
+        $user->language_code = $lang;
+        $user->save();
+        $this->sendMenu($user);
+    }
 
+    public function callback($user,$query)
+    {
+        $commands = explode('|', $query['data']);
+        $command = $commands[0];
+        $id = $commands[1];
+        $product = isset($commands[2]) ? $commands[2] : '';
+        $message_id = $query['message']['message_id'];
+        $this->telegram->deleteMessage($query['message']['chat']['id'], $message_id);
+        switch ($command) {
+            case 'lang':
+                $this->setLang($user, $id);break;
+        }
+    }
 
 
 }

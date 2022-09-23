@@ -41,7 +41,8 @@ class WebhookController extends Controller
         $message = isset($data['message']) && isset($data['message']['text']) ? $data['message']['text'] : '';
         if($message)
             $this->service->answer($user, $message, $data);
-
+        if(isset($data['callback_query']))
+            $this->service->callback($user, $data['callback_query']);
 
 
     }
