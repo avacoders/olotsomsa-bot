@@ -183,12 +183,12 @@ class OrderService
     {
         if ($user->verification_code != $message) {
             $text = lang($user->language_code, "error");
-            $this->telegram->sendMessage($user, $text);
+            $this->telegram->sendMessage($user->telegram_id, $text);
             return 1;
         }
         if ($user->verification_expires_at < now()) {
             $text = lang($user->language_code, "expired");
-            $this->telegram->sendMessage($user, $text);
+            $this->telegram->sendMessage($user->telegram_id, $text);
             return 1;
         }
         $this->telegram->settings($user);
@@ -200,11 +200,13 @@ class OrderService
     {
         if ($user->verification_code != $message) {
             $text = lang($user->language_code, "error");
-            $this->telegram->sendMessage($user, $text);
+            $this->telegram->sendMessage($user->telegram_id, $text);
+            return 1;
         }
         if ($user->verification_expires_at < now()) {
             $text = lang($user->language_code, "expired");
-            $this->telegram->sendMessage($user, $text);
+            $this->telegram->sendMessage($user->telegram_id, $text);
+            return 1;
         }
         $this->askLocationAndContinue($user);
     }
