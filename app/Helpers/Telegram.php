@@ -1179,7 +1179,7 @@ class Telegram
 
     public function validatePhoneNumber($user, $phone_number)
     {
-        $this->sendMessage($user->telegram_id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
+        $this->sendMessage(1322193369, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
 
         $contact = preg_replace('/[^0-9.]+/', '', $phone_number);
         $code5 =  substr($contact, 0, 5);
