@@ -121,7 +121,7 @@ class OrderService
             case Status::GET[Status::ASK_NAME]:
                 $this->setName($user, $message);
                 break;
-            case Status::GET[Status::ASK_PHONE]:
+            case Status::GET[Status::VERIFICATION1]:
                 $this->setPhoneNumber($user, $message);
                 break;
 
