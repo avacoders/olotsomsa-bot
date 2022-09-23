@@ -30,9 +30,13 @@ class OrderService
                 $this->sendMenu($user);
             else
                 $this->askLang($chat_id);
+            return 1;
         }
         if ($message == "/settings")
+        {
             $this->telegram->settings($user);
+            return 1;
+        }
         $this->answerByStatus($user, $message);
 
     }
