@@ -1181,8 +1181,7 @@ class Telegram
     {
 
         $contact = preg_replace('/[^0-9.]+/', '', $phone_number);
-        Log::debug($contact);
-        $code5 =  substr(json_encode($contact), 0, 5);
+        $code5 =  substr($contact, 0, 5);
 
         if (strlen($contact) != 12 || !in_array($code5, [99890, 99891, 99893, 99894, 99895, 99897, 99899]) || $code5 == 99898) {
             $this->sendMessage($user->telegram_id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
