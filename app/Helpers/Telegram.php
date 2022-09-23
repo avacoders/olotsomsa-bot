@@ -36,69 +36,6 @@ class Telegram
         $this->bot = $bot;
     }
 
-    public function setName($user, $name, $status)
-    {
-        $user->name = $name;
-        $user->save();
-//        if ($status == Status::GET[Status::ASK_NAME])
-        $this->sendMenu($user);
-//        else if ($status == Status::GET[Status::ENTER_NAME])
-//            $this->askPhone($user, 0, Status::GET[Status::ASK_PHONE]);
-    }
-
-
-    public function askName($user, $message_id)
-    {
-        $this->deleteMessage($user->telegram_id, $message_id);
-        $text = lang($user->language_code, 'hi');
-        $user->status_id = Status::GET[Status::ASK_NAME];
-        $user->save();
-        Log::debug(213123);
-        $this->sendMessage($user->telegram_id, $text);
-    }
-
-    public function askPhone($user, $message_id, $status)
-    {
-        if ($message_id)
-            $this->deleteMessage($user->telegram_id, $message_id);
-        $text = lang($user->language_code, 'ask_phone1') . "\n" . lang($user->language_code, 'ask_phone2') . " 998903911755";
-        $buttons = [
-            'keyboard' => [
-                [
-                    [
-                        'text' => lang($user->language_code, 'phone'),
-                        'request_contact' => true
-                    ]
-                ]
-            ],
-            'resize_keyboard' => true,
-            'one_time_keyboard' => true
-
-        ];
-        $user->status_id = $status;
-        $user->save();
-        $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
-    }
-
-    public function setPhone($user, $phone, $status)
-    {
-        $user->phone_number = $phone;
-        $user->save();
-        if ($status == Status::GET[Status::PHONE_NUMBER])
-            $this->sendMenu($user);
-        if ($status == Status::GET[Status::ASK_PHONE])
-            $this->askLocation($user, 0, Status::GET[Status::LOCATION_SELECT]);
-    }
-
-    public function askLocation($user,)
-    {
-        $user->status_id = Status::GET[Status::LOCATION_SELECT];
-        $user->save();
-        $this->location($user, 0, 1);
-
-
-    }
-
     public function settings($user)
     {
         $text = "🔧 Sozlamalar / Profil \n\n";
