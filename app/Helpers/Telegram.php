@@ -140,7 +140,6 @@ class Telegram
     }
 
 
-
     public function lang($user)
     {
         $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
@@ -1289,27 +1288,21 @@ class Telegram
     }
 
 
-    public function sendVerification($user, $contact, $status = Status::GET[Status::PHONE_NUMBER])
+    public function validatePhoneNumber($user, $phone_number)
     {
-        Log::debug($status);
-        $contact = preg_replace('/[^0-9.]+/', '', $contact);
-
-
-        $code5 = substr($contact, 0, 5);
-        if ($code5 == 99898) {
-            $this->sendMessage($user->telegram_id, "Afsuski, biz hozircha Perfectum mobile foydalanuvchilarini qabul qilaolmaymiz. Iltimos boshqa raqam kiriting");
-            $this->sendContactRequest($user);
-            return 1;
-        }
-
-        $code5 = preg_replace('/[^0-9.]+/', '', $code5);
-
-
-        if (strlen($contact) != 12 || !in_array($code5, [99890, 99891, 99893, 99894, 99895, 99897, 99899])) {
+        $contact = preg_replace('/[^0-9.]+/', '', $phone_number);
+        $code5 = preg_replace('/[^0-9.]+/', '', substr($contact, 0, 5));
+        if (strlen($contact) != 12 || !in_array($code5, [99890, 99891, 99893, 99894, 99895, 99897, 99899]) || $code5 == 99898) {
             $this->sendMessage($user->telegram_id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
             $this->sendContactRequest($user);
-            return 1;
+            return false;
+        } else {
+            return true;
         }
+    }
+
+    public function sendVerification($user, $contact)
+    {
         $code = rand(10000, 99999);
         $buttons = [
             "remove_keyboard" => true
@@ -1318,15 +1311,10 @@ class Telegram
         $user->phone_number = $contact;
         $user->verification_code = $code;
         $user->verification_expires_at = now()->addMinutes(5);
-        if ($status == STATUS::GET[Status::PHONE_NUMBER]) {
-            $user->status_id = STATUS::GET[Status::VERIFICATION];
-        }
-        if ($status == STATUS::GET[Status::ASK_PHONE]) {
-            $user->status_id = STATUS::GET[Status::VERIFICATION1];
-        }
         $user->save();
         $text = "SIZNING OLOTSOMSA ORIGINAL BOT UCHUN KODINGIZ: $code";
         Sms::send($contact, $text);
+
     }
 
 
@@ -1358,7 +1346,7 @@ class Telegram
     public function sendButtons($chat_id, $message, $button)
     {
         $result = $this->http::post(self::url . $this->bot . '/sendMessage', [
-            'chat_id' => (int) $chat_id,
+            'chat_id' => (int)$chat_id,
             'text' => $message,
             'reply_markup' => $button,
             'parse_mode' => 'html',
@@ -1374,7 +1362,6 @@ class Telegram
 
         return $user && $user->phone_number;
     }
-
 
 
     public function sendCategoryProducts($user, $category, $message_id)
@@ -1586,32 +1573,32 @@ class Telegram
 
     public function saveData($data)
     {
-            try {
-                DB::beginTransaction();
-                $data = isset($data['message']) ? $data['message']: $data['callback_query'];
+        try {
+            DB::beginTransaction();
+            $data = isset($data['message']) ? $data['message'] : $data['callback_query'];
 
-                $user = $data['from'];
-                $user1['name'] = $user["first_name"];
-                $user1['no_name'] = 0;
-                $user1['telegram_id'] = $user["id"];
-                $user1['is_bot'] = false;
-                $user1['role_id'] = false;
-                $user1['password'] = bcrypt('secret');
+            $user = $data['from'];
+            $user1['name'] = $user["first_name"];
+            $user1['no_name'] = 0;
+            $user1['telegram_id'] = $user["id"];
+            $user1['is_bot'] = false;
+            $user1['role_id'] = false;
+            $user1['password'] = bcrypt('secret');
 
-                $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
-                if (!$existing_user) {
-                    $existing_user = User::create($user1);
-                }
-                DB::commit();
-                return $existing_user;
-
-            } catch
-            (\Exception $exception) {
-                Log::debug($exception);
-                DB::rollBack();
-                return $exception;
-
+            $existing_user = User::where('telegram_id', $user1['telegram_id'])->first();
+            if (!$existing_user) {
+                $existing_user = User::create($user1);
             }
+            DB::commit();
+            return $existing_user;
+
+        } catch
+        (\Exception $exception) {
+            Log::debug($exception);
+            DB::rollBack();
+            return $exception;
+
+        }
 
 
     }

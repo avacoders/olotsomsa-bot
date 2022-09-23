@@ -32,11 +32,23 @@ class OrderService
 
     public function answerByStatus($user, $message)
     {
-        switch($user->status_id)
-        {
+        switch ($user->status_id) {
             case Status::GET[Status::NAME]:
                 $this->setNameAndContinue($user, $message);
                 break;
+            case Status::GET[Status::PHONE_NUMBER]:
+                $this->setPhoneNumberAndContinue($user, $message);
+                break;
+        }
+    }
+
+    public function setPhoneNumberAndContinue($user, $message)
+    {
+        if($this->telegram->validatePhoneNumber($user, $message)) {
+            $user->phone_number = $message;
+            $user->status_id = Status::GET[Status::VERIFICATION];
+            $user->save();
+            $this->telegram->sendVerification($user, $message);
         }
     }
 
@@ -45,14 +57,12 @@ class OrderService
         $user->name = $message;
         $user->no_name = 1;
         $user->save();
-        if(!$user->phone_number)
-        {
+        if (!$user->phone_number) {
             $this->askPhone($user);
-        }else{
+        } else {
             $this->askLocation($user);
         }
     }
-
 
 
     public function sendMenu($user)
@@ -121,8 +131,7 @@ class OrderService
 
     public function confirm($user, $id)
     {
-        if(!$user->no_name)
-        {
+        if (!$user->no_name) {
             $this->askName($user);
             return 0;
         }
@@ -135,6 +144,7 @@ class OrderService
         $user->save();
         $this->telegram->sendMessage($user->telegram_id, $text);
     }
+
     public function askPhone($user)
     {
         $text = "Telefon raqamingizni kiriting";
