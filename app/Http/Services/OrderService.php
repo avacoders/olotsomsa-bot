@@ -202,7 +202,8 @@ class OrderService
         $id = $commands[1];
         $product = isset($commands[2]) ? $commands[2] : '';
         $message_id = $query['message']['message_id'];
-        $this->telegram->deleteMessage($query['message']['chat']['id'], $message_id);
+        if (in_array($command, ["lang", "confirm", "payment"]))
+            $this->telegram->deleteMessage($query['message']['chat']['id'], $message_id);
         switch ($command) {
             case 'lang':
                 $this->setLang($user, $id);
@@ -238,13 +239,13 @@ class OrderService
                 $this->telegram->posuda($message_id, $id, 'sub', $product);
                 break;
             case "location":
-                $this->telegram->getLocation( $message_id, $id,);
+                $this->telegram->getLocation($message_id, $id,);
                 break;
             case "cancelSite":
-                $this->telegram->cancelSite( $message_id, $id,"cancel");
+                $this->telegram->cancelSite($message_id, $id, "cancel");
                 break;
             case "receiveSite":
-                $this->telegram->cancelSite( $message_id, $id,$product);
+                $this->telegram->cancelSite($message_id, $id, $product);
                 break;
         }
     }
