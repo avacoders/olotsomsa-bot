@@ -6,6 +6,7 @@ use App\Helpers\Telegram;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Status;
+use Illuminate\Support\Facades\Log;
 
 class OrderService
 {
@@ -70,20 +71,17 @@ class OrderService
 
     public function setVerificationAndContinue($user, $message)
     {
-        if($user->verification_code != $message)
-        {
+        if ($user->verification_code != $message) {
             $text = "Kiritilgan kod noto'g'ri. Iltimos qayta kiriting";
             $this->telegram->sendMessage($user, $text);
         }
-        if($user->verification_expires_at < now())
-        {
+        if ($user->verification_expires_at < now()) {
             $text = "Kod muddati tugagan. Iltimos qayta kiriting";
             $this->telegram->sendMessage($user, $text);
         }
-        else
-        {
-            $this->askLocationAndContinue($user);
-        }
+        Log::debug(123);
+        $this->askLocationAndContinue($user);
+
     }
 
 
