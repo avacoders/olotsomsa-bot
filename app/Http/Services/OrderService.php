@@ -100,6 +100,10 @@ class OrderService
                 break;
             case "phone":
                 $this->askPhoneForChange($user);
+                break;
+            case "change_lang":
+                $this->askLang($user->chat_id);
+                break;
         }
     }
 
@@ -358,7 +362,16 @@ class OrderService
         $text = "Telefon raqamingizni kiriting";
         $user->status_id = Status::GET[Status::ASK_PHONE];
         $user->save();
-        $this->telegram->sendMessage($user->telegram_id, $text);
+        $contact = [
+            'text' => lang("uz", 'phone'),
+            'request_contact' => true
+        ];
+        $buttons = [
+            'keyboard' => [],
+            'resize_keyboard' => true,
+        ];
+        $buttons['keyboard'][] = [$contact];
+        $this->telegram->sendButtons($user->telegram_id, $text, json_encode($buttons));
     }
 
     public function askPhone($user)
@@ -366,8 +379,16 @@ class OrderService
         $text = "Telefon raqamingizni kiriting";
         $user->status_id = Status::GET[Status::PHONE_NUMBER];
         $user->save();
-        $this->telegram->sendMessage($user->telegram_id, $text);
-    }
+        $contact = [
+            'text' => lang("uz", 'phone'),
+            'request_contact' => true
+        ];
+        $buttons = [
+            'keyboard' => [],
+            'resize_keyboard' => true,
+        ];
+        $buttons['keyboard'][] = [$contact];
+        $this->telegram->sendButtons($user->telegram_id, $text, json_encode($buttons));    }
 
     public function askLocationAndContinue($user)
     {
