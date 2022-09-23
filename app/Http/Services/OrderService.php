@@ -72,8 +72,9 @@ class OrderService
         $this->sendMenu($user);
     }
 
-    public function callback($user,$query)
+    public function callback($user,$data)
     {
+        $query = $data['callback_query'];
         $commands = explode('|', $query['data']);
         $command = $commands[0];
         $id = $commands[1];

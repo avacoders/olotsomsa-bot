@@ -42,7 +42,7 @@ class WebhookController extends Controller
         if($message)
             $this->service->answer($user, $message, $data);
         if(isset($data['callback_query']))
-            $this->service->callback($user, $data['callback_query']);
+            $this->service->callback($user, $data);
 
 
     }
