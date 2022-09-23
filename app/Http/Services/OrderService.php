@@ -17,14 +17,13 @@ class OrderService
     {
         $call_id = isset($data['callback_query']) ? $data['callback_query']['message']['chat']['id'] : '';
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
-        if($message == "/start") {
-            if($user)
+        if ($message == "/start") {
+            if ($user)
                 $this->sendMenu($user);
             else
                 $this->askLang($chat_id);
         }
     }
-
 
 
     public function sendMenu($user)
@@ -64,17 +63,17 @@ class OrderService
         $this->telegram->sendButtons($user_id, $text, json_encode($buttons));
     }
 
-    public function setLang($data, $lang)
+    public function setLang($user, $lang)
     {
-        $user = $this->telegram->saveData($data);
         $user->language_code = $lang;
         $user->save();
         $this->sendMenu($user);
     }
 
-    public function callback($user,$data)
+    public function callback($user, $data)
     {
         $query = $data['callback_query'];
+        $user = $user ?? $this->telegram->saveData($data);
         $commands = explode('|', $query['data']);
         $command = $commands[0];
         $id = $commands[1];
@@ -83,7 +82,8 @@ class OrderService
         $this->telegram->deleteMessage($query['message']['chat']['id'], $message_id);
         switch ($command) {
             case 'lang':
-                $this->setLang($data, $id);break;
+                $this->setLang($user, $id);
+                break;
         }
     }
 
