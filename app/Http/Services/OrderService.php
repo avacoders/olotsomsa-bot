@@ -210,8 +210,41 @@ class OrderService
             case "confirm":
                 $this->confirm($user, $id);
                 break;
+            case "payment":
+                $this->payment($user, $id);
         }
     }
+    public function payment($user, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $order = $user->orders()->where('status_id', Order::STATUS_NEW)->latest()->first();
+
+            if ($order) {
+                $order->status_id = Order::STATUS_IN_PROGRESS;
+                $order->delivery_minute = 5;
+                $order->delivery_price = 5000;
+                $order->posuda = 0;
+                $order->type = $id;
+                $order->save();
+                $text = "$order->id  raqamli buyurtmangiz qabul qilindi! Iltimos, operator javobini kuting. Buyurtmangizni yetkazib berish vaqti va pulini tez orada ma'lum qilamiz!  ";
+                $this->telegram->sendMessage($user->telegram_id, $text);
+                $text = $this->makeText($order, $user);
+                $buttons = $this->buttons($order);
+                $this->telegram->sendMessageWithButtons(env("TELEGRAM_ORDER_ID"), $text, json_encode($buttons));
+            } else {
+                $this->sendMenu($user);
+            }
+
+            DB::commit();
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            Log::debug($exception);
+        }
+    }
+
 
     public function confirm($user, $id)
     {
@@ -341,5 +374,92 @@ class OrderService
 
 
     }
+    public function buttons($order)
+    {
+
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => "30 min",
+                'callback_data' => "addMinute|$order->id|30",
+            ],
+            [
+                'text' => "60 min",
+                'callback_data' => "addMinute|$order->id|60",
+            ],
+            [
+                'text' => "90 min",
+                'callback_data' => "addMinute|$order->id|90",
+            ]
+        ];
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => "DOSTAVKA SUMMASI",
+                'callback_data' => "1|2|1",
+            ],
+        ];
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => "10000",
+                'callback_data' => "addPrice|$order->id|10000",
+            ],
+            [
+                'text' => "20000",
+                'callback_data' => "addPrice|$order->id|20000",
+            ],
+            [
+                'text' => "+1000",
+                'callback_data' => "subPrice|$order->id|20000",
+            ],
+            [
+                'text' => "-1000",
+                'callback_data' => "subPrice|$order->id",
+            ]
+        ];
+        $buttons['inline_keyboard'][] = [
+
+        ];
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => "POSUDA QO'SHISH",
+                'callback_data' => "1|2|1",
+            ],
+        ];
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => "2000",
+                'callback_data' => "posuda|$order->id|2000",
+            ],
+            [
+                'text' => "6000",
+                'callback_data' => "posuda|$order->id|6000",
+            ],
+            [
+                'text' => "+1000 ",
+                'callback_data' => "addPosuda|$order->id|1000",
+            ],
+            [
+                'text' => "-1000",
+                'callback_data' => "subPosuda|$order->id|1000",
+            ]
+        ];
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => lang('uz', "confirm"),
+                'callback_data' => "receive|$order->id",
+            ],
+            [
+                'text' => "BEKOR QIL ❎",
+                'callback_data' => "cancel|$order->id",
+            ]
+        ];
+        $buttons['inline_keyboard'][] = [
+            [
+                'text' => "Lokatsiya olish",
+                'callback_data' => "location|$order->id|10000",
+            ],
+        ];
+        return $buttons;
+    }
+
 
 }
