@@ -2,10 +2,13 @@
 
 namespace App\Http\Services;
 
+use App\Helpers\Geolocation;
 use App\Helpers\Telegram;
+use App\Models\Location;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Status;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrderService
@@ -47,15 +50,6 @@ class OrderService
         }
     }
 
-    public function setPhoneNumberAndContinue($user, $message)
-    {
-        if ($this->telegram->validatePhoneNumber($user, $message)) {
-            $user->phone_number = $message;
-            $user->status_id = Status::GET[Status::VERIFICATION];
-            $user->save();
-            $this->telegram->sendVerification($user, $message);
-        }
-    }
 
     public function setNameAndContinue($user, $message)
     {
@@ -66,6 +60,15 @@ class OrderService
             $this->askPhone($user);
         } else {
             $this->askLocationAndContinue($user);
+        }
+    }
+    public function setPhoneNumberAndContinue($user, $message)
+    {
+        if ($this->telegram->validatePhoneNumber($user, $message)) {
+            $user->phone_number = $message;
+            $user->status_id = Status::GET[Status::VERIFICATION];
+            $user->save();
+            $this->telegram->sendVerification($user, $message);
         }
     }
 
@@ -81,6 +84,53 @@ class OrderService
         }
         Log::debug(123);
         $this->askLocationAndContinue($user);
+
+    }
+
+    public function setLocation($user, $location)
+    {
+        DB::beginTransaction();
+        try {
+            $geolocation = new Geolocation();
+            $address = $geolocation->Get_Address_From_Google_Maps($location['latitude'], $location['longitude']);$order = $user->orders()->where("status_id", Order::STATUS_NEW)->latest()->first();
+            if ($order) {
+                $location1 = Location::create([
+                    'user_id' => $user->id,
+                    'longitude' => $location['longitude'],
+                    'latitude' => $location['latitude'],
+                    'text' => $address,
+                ]);
+
+                $l['location_id'] = (int)$location1->id;
+                $order->update($l);
+
+
+                $contact = [
+                    [['text' => lang("uz", 'back')]],
+                ];
+                $buttons = [
+                    'keyboard' => $contact,
+                    'resize_keyboard' => true,
+                ];
+
+
+                $user->status_id = Status::GET[Status::COMMENT];
+                $user->save();
+                $text = lang("uz", 'your_address') . ": $location1->text \n\n";
+                $text .= lang("uz", 'correct_address');
+
+                $this->telegram->sendMessageWithButtons($user->id, $text, json_encode($buttons));
+            } else {
+                $this->sendMenu($user->id);
+            }
+            DB::commit();
+        } catch (\Exception $exception) {
+            $this->sendMenu($user->id);
+            DB::rollBack();
+            Log::debug($exception);
+
+        }
+
 
     }
 

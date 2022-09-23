@@ -39,10 +39,16 @@ class WebhookController extends Controller
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
         $user = User::where('telegram_id', $chat_id)->first();
         $message = isset($data['message']) && isset($data['message']['text']) ? $data['message']['text'] : '';
+        $contact = isset($data['message']) && isset($data['message']['contact']) ? $data['message']['contact'] : '';
+        $location = isset($data['message']) && isset($data['message']['location']) ? $data['message']['location'] : '';
         if($message)
             $this->service->answer($user, $message, $data);
         if(isset($data['callback_query']))
             $this->service->callback($user, $data);
+        if($contact)
+            $this->service->setPhoneNumberAndContinue($user, $contact);
+        if($location)
+            $this->service->setLocation($user, $location);
 
 
     }
