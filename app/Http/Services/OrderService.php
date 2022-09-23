@@ -124,6 +124,9 @@ class OrderService
             case Status::GET[Status::VERIFICATION1]:
                 $this->setVerification($user, $message);
                 break;
+            case Status::GET[Status::ASK_PHONE]:
+                $this->setPhoneNumber($user, $message);
+                break;
 
         }
     }
@@ -167,6 +170,7 @@ class OrderService
             $this->telegram->sendVerification($user, $message);
         }
     }
+
     public function setVerification($user, $message)
     {
         if ($user->verification_code != $message) {
@@ -212,21 +216,12 @@ class OrderService
                 $order->update($l);
 
 
-                $contact = [
-                    [['text' => lang("uz", 'back')]],
-                ];
-                $buttons = [
-                    'keyboard' => $contact,
-                    'resize_keyboard' => true,
-                ];
-
-
                 $user->status_id = Status::GET[Status::COMMENT];
                 $user->save();
                 $text = lang("uz", 'your_address') . ": $location1->text \n\n";
                 $text .= lang("uz", 'correct_address');
 
-                $this->telegram->sendMessageWithButtons($user->telegram_id, $text, json_encode($buttons));
+                $this->telegram->sendMessage($user->telegram_id, $text);
             } else {
                 $this->sendMenu($user->id);
             }
