@@ -45,8 +45,10 @@ class WebhookController extends Controller
             $this->service->answer($user, $message, $data);
         if(isset($data['callback_query']))
             $this->service->callback($user, $data);
-        if($contact)
+        if($contact && $user->status_id == Status::GET[Status::PHONE_NUMBER])
             $this->service->setPhoneNumberAndContinue($user, $contact);
+        if($contact && $user->status_id == Status::GET[Status::ASK_PHONE])
+            $this->service->setPhoneNumber($user, $contact);
         if($location)
             $this->service->setLocation($user, $location);
 
