@@ -764,7 +764,7 @@ class Telegram
         $user = $order->user;
 
         if ($order->status_id != Order::STATUS_COMPLETE) {
-            $text = "Buyurtmangiz tayyorlanish jarayonida. Sizga $order->delivery_minute daqiqada yetkazib beramiz.";
+            $text = lang($user->language_code,"accepted1")." $order->delivery_minute". lang($user->language_code,"accepted2");
             $text .= "\nDOSTAVKA <b>$order->delivery_price 💵</b>\n";
             $text .= "\nPOSUDA <b><i>$order->posuda</i></b> 💵 \n";
             $order_product = OrderProduct::query()
@@ -800,7 +800,7 @@ class Telegram
         $order = Order::find($id);
         $user = $order->user;
 
-        $text = "Buyurtmangiz bekor qilindi!\nSabab: Biz ish vaqtida emasmiz. Iltimos keyinroq urinib ko'ring";
+        $text = lang($user->language_code, "canceled");
 
         $this->sendMessage($user->telegram_id, $text);
         $this->changeOrderStatus($message_id, $id, Order::STATUS_CANCEL);
@@ -814,7 +814,7 @@ class Telegram
             $text = "Buyurtmangiz bekor qilindi!\nSabab: Biz ish vaqtida emasmiz. Iltimos keyinroq urinib ko'ring";
             $status = Order::STATUS_CANCEL;
         } else {
-            $text = "Buyurtmangiz tayyorlanish jarayonida. Sizga $order->delivery_minute daqiqada yetkazib beramiz.";
+            $text = lang($user->language_code, "accepted1")." $order->delivery_minute ".lang($user->language_code, "accepted2") ;
             $status = Order::STATUS_COMPLETE;
         }
 
