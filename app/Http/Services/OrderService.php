@@ -177,7 +177,6 @@ class OrderService
 
     public function askLocationAndContinue($user)
     {
-        $text = "Manzilingizni kiriting";
         $user->status_id = Status::GET[Status::LOCATION_SELECT];
         $user->save();
         $location = [
@@ -189,7 +188,7 @@ class OrderService
             'resize_keyboard' => true,
         ];
         $buttons['keyboard'][] = [$location];
-        $this->telegram->sendMessageWithButtons($user->telegram_id, $text, json_encode($buttons));
+        $this->telegram->sendMessageWithButtons($user->telegram_id, lang("uz", 'location_text'), json_encode($buttons));
     }
 
 
