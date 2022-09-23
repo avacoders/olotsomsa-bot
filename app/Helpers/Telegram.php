@@ -1123,7 +1123,7 @@ class Telegram
         return $text;
     }
 
-    public function makeText($order)
+    public function     makeText($order)
     {
 
         $user = $order->user;
@@ -1248,14 +1248,6 @@ class Telegram
             'disable_web_page_preview' => true
         ]);
         return $result;
-    }
-
-    public function checkNewUser($user_id)
-    {
-        $user = User::where('telegram_id', $user_id)->first();
-
-
-        return $user && $user->phone_number;
     }
 
 

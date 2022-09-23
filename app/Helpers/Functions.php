@@ -3,8 +3,6 @@
 
 function lang($locale, $key)
 {
-    $locale = "uz";
-
     $keys = [
         'uz' => [
             "hi" => "TO'LIQ ISMINGIZNI KIRITING",
@@ -27,7 +25,7 @@ function lang($locale, $key)
             "empty" => "🤷‍♂️Savat hali bo'm-bo'sh",
             "order_time" => "Buyurtma vaqti:",
             "order_no" => "Buyurtma raqami: ",
-            "general" => "Umumiy:",
+            "general" => "Umumiy",
             "section" => "Bo'lim:",
             "select_no" => "Iltimos, soni tanlang!",
             "error" => "Kiritilgan kod noto'g'ri, qaytadan urinib ko'ring",
@@ -55,11 +53,14 @@ function lang($locale, $key)
             "change_til" => "Tilni o'zgartirish",
             "change_name" => "Ismni o'zgartirish",
             "change_phone" => "Telefon raqamni o'zgartirish",
-            "comment" => "Комментарий",
-            "location" => "Геолокация",
-            "sum" => "Сум",
+            "comment" => "Izoh",
+            "location" => "Geolokatsiya",
+            "sum" => "so'm",
             "accepted1" => "Buyurtmangiz tayyorlanish jarayonida. Sizga ",
             "accepted2" => " 60 daqiqada yetkazib beramiz",
+            "cancelled" => "Buyurtmangiz bekor qilindi",
+            "umumiy" => "Umumiy",
+
         ],
         'ru' => [
             "hi" => "ВВЕДИТЕ СВОЕ ПОЛНОЕ ИМЯ",
@@ -82,7 +83,7 @@ function lang($locale, $key)
             "empty" => "🤷‍♂️Savat hali bo'm-bo'sh",
             "order_time" => "Время заказа: ",
             "order_no" => "Порядковый номер: ",
-            "general" => "Всего:",
+            "general" => "Всего",
             "section" => "Bo'lim:",
             "select_no" => "Iltimos, soni tanlang!",
             "error" => "Введен неверный код, попробуйте еще раз",
@@ -116,6 +117,7 @@ function lang($locale, $key)
             "accepted1" => "Ваш заказ готовится. Доставим за ",
             "accepted2" => " минут",
             "cancelled" => "Ваш заказ отменен",
+            "umumiy" => "Всего",
         ],
         'en' => [
             "hi" => "ASSALOMU ALAYKUM. ILTIMOS TO'LIQ ISMINGIZNI KIRITING",

@@ -479,10 +479,10 @@ class OrderService
                     $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
                 }
 
-                $text .= "\n<b>Umumiy</b>: $sum so'm";
-                $text .= "\n<b>Geolokatsiya</b>: $location";
-                $text .= "\n\n<b>Telefon raqam</b>: $user->phone_number";
-                $text .= "\n\n<b>IZOH</b>: $order->comment";
+                $text .= "\n<b>".lang($user->language_code, "general")."</b>: $sum so'm";
+                $text .= "\n<b>".lang($user->language_code, "location")."</b>: $location";
+                $text .= "\n\n<b>".lang($user->language_code, "telefon")."</b>: $user->phone_number";
+                $text .= "\n\n<b>".lang($user->language_code, "comment")."</b>: $order->comment";
                 $text .= "\n\n".lang($user->language_code,"payment")."\n";
 
 
