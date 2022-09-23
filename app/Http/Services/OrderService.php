@@ -122,7 +122,7 @@ class OrderService
                 $this->setName($user, $message);
                 break;
             case Status::GET[Status::VERIFICATION1]:
-                $this->setPhoneNumber($user, $message);
+                $this->setVerification($user, $message);
                 break;
 
         }
@@ -167,7 +167,18 @@ class OrderService
             $this->telegram->sendVerification($user, $message);
         }
     }
-
+    public function setVerification($user, $message)
+    {
+        if ($user->verification_code != $message) {
+            $text = "Kiritilgan kod noto'g'ri. Iltimos qayta kiriting";
+            $this->telegram->sendMessage($user, $text);
+        }
+        if ($user->verification_expires_at < now()) {
+            $text = "Kod muddati tugagan. Iltimos qayta kiriting";
+            $this->telegram->sendMessage($user, $text);
+        }
+        $this->telegram->settings($user);
+    }
 
     public function setVerificationAndContinue($user, $message)
     {
@@ -179,7 +190,6 @@ class OrderService
             $text = "Kod muddati tugagan. Iltimos qayta kiriting";
             $this->telegram->sendMessage($user, $text);
         }
-        Log::debug(123);
         $this->askLocationAndContinue($user);
     }
 
