@@ -140,28 +140,6 @@ class Telegram
     }
 
 
-    public function setLang($data)
-    {
-        if ($data)
-            $user = $this->saveData($data);
-        $text = "TILNI TANLANG    //   ВЫБЕРИТЕ ЯЗЫК\n\n";
-        $buttons = [
-            "remove_keyboard" => true,
-            "inline_keyboard" => [
-                [
-                    [
-                        "text" => "🇺🇿 O'zbekcha",
-                        "callback_data" => "lang|uz"
-                    ],
-                    [
-                        "text" => "🇷🇺 Русский",
-                        "callback_data" => "lang|ru"
-                    ]
-                ]
-            ]
-        ];
-        $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
-    }
 
     public function lang($user)
     {
@@ -1398,22 +1376,6 @@ class Telegram
     }
 
 
-    public function sendMenu($user)
-    {
-        $buttons = [
-            'inline_keyboard' => [
-                [
-                    ["text" => "Buyurtma berish",
-                        "web_app" => [
-                            "url" => "https://telegram.olotsomsa.com/bot/app"
-                        ]
-                    ]
-                ]
-            ]
-        ];
-        $this->sendButtons($user->telegram_id, lang($user->language_code, 'menu'), json_encode($buttons));
-
-    }
 
     public function sendCategoryProducts($user, $category, $message_id)
     {
