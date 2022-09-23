@@ -102,7 +102,7 @@ class OrderService
                 $this->askPhoneForChange($user);
                 break;
             case "change_lang":
-                $this->askLang($user->chat_id);
+                $this->askLang($user->telegram_id);
                 break;
         }
     }
