@@ -43,6 +43,8 @@ class Telegram
         $text .= "📞 Telefon raqam: " . $user->phone_number . "\n" ?? "No'malum" . "\n";
         $text .= "🔄 Til: " . $user->lang . "\n";
         $text .= "🆔 ID: " . $user->telegram_id . "\n";
+        $user->status_id = Status::GET[Status::NORMAL];
+        $user->save();
 
         $buttons = [
             "inline_keyboard" => [
