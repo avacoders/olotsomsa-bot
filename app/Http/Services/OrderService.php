@@ -17,7 +17,7 @@ class OrderService
     {
         if($message == "/start") {
             if($user)
-                $this->sendMenu($user->telegram_id);
+                $this->sendMenu($user);
             else
                 $this->askLang($user, $data);
         }
