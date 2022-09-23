@@ -40,7 +40,7 @@ class Telegram
     {
         $text = "🔧 ".lang($user->language_code,"settings")." \n\n";
         $text .= "👤 ".lang($user->language_code, "name").": " . $user->name . "\n";
-        $text .= "📞 ".lang($user->language_code, "telefon")." " . $user->phone_number . "\n" ?? "No'malum" . "\n";
+        $text .= "📞 ".lang($user->language_code, "telefon").": " . $user->phone_number . "\n" ?? "No'malum" . "\n";
         $text .= "🔄 ".lang($user->language_code, "til").": " . $user->lang . "\n";
         $text .= "🆔 ID: " . $user->telegram_id . "\n";
         $user->status_id = Status::GET[Status::NORMAL];
