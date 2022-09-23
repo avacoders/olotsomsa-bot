@@ -252,6 +252,11 @@ class OrderService
             $this->askName($user);
             return 0;
         }
+        if (!$user->phone_number) {
+            $this->askPhone($user);
+            return 0;
+        }
+        $this->askLocationAndContinue($user);
     }
 
     public function askName($user)
