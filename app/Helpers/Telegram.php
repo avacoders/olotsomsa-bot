@@ -1198,6 +1198,7 @@ class Telegram
     public function sendVerification($user, $contact)
     {
         $code = rand(10000, 99999);
+        $contact = preg_replace('/[^0-9.]+/', '', $contact);
         $buttons = [
             "remove_keyboard" => true
         ];
