@@ -437,7 +437,7 @@ class Telegram
     }
 
 
-    public function history($user, $message_id, $callback_query_id, $id)
+    public function history($user, $message_id, $callback_query_id)
     {
 
         DB::beginTransaction();

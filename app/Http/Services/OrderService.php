@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class OrderService
 {
     protected $telegram;
+    protected $exception_commands = ["lang", "confirm", "payment", "history","change_lang","phone"];
 
     public function __construct()
     {
@@ -34,6 +35,70 @@ class OrderService
             $this->telegram->settings($user);
         $this->answerByStatus($user, $message);
 
+    }
+
+    public function callback($user, $data)
+    {
+        $query = $data['callback_query'];
+        $user = $user ?? $this->telegram->saveData($data);
+        $commands = explode('|', $query['data']);
+        $command = $commands[0];
+        $id = $commands[1];
+        $product = isset($commands[2]) ? $commands[2] : '';
+        $message_id = $query['message']['message_id'];
+        $callback_id = $query['id'];
+        if (in_array($command, $this->exception_commands))
+            $this->telegram->deleteMessage($query['message']['chat']['id'], $message_id);
+        switch ($command) {
+            case 'lang':
+                $this->setLang($user, $id);
+                break;
+            case "confirm":
+                $this->confirm($user, $id);
+                break;
+            case "payment":
+                $this->payment($user, $id);
+                break;
+            case "addMinute":
+                $this->telegram->minute($message_id, $id, "plus", $product);
+                break;
+            case "addPrice":
+                $this->telegram->price($message_id, $id, "plus", $product);
+                break;
+            case "subPrice":
+                $this->telegram->price($message_id, $id, "minus", $product);
+                break;
+            case "receive":
+                $this->telegram->receive($message_id, $id);
+                break;
+            case "cancel":
+                $this->telegram->cancel($message_id, $id);
+                break;
+            case "posuda":
+                $this->telegram->posuda($message_id, $id, 'set', $product);
+                break;
+            case "addPosuda":
+                $this->telegram->posuda($message_id, $id, 'add', $product);
+                break;
+            case "subPosuda":
+                $this->telegram->posuda($message_id, $id, 'sub', $product);
+                break;
+            case "location":
+                $this->telegram->getLocation($message_id, $id,);
+                break;
+            case "cancelSite":
+                $this->telegram->cancelSite($message_id, $id, "cancel");
+                break;
+            case "receiveSite":
+                $this->telegram->cancelSite($message_id, $id, $product);
+                break;
+            case "history":
+                $this->telegram->history($user, $message_id, $callback_id);
+                break;
+            case "name":
+                $this->askNameForChange($user);
+                break;
+        }
     }
 
     public function answerByStatus($user, $message)
@@ -195,62 +260,7 @@ class OrderService
         $this->sendMenu($user);
     }
 
-    public function callback($user, $data)
-    {
-        $query = $data['callback_query'];
-        $user = $user ?? $this->telegram->saveData($data);
-        $commands = explode('|', $query['data']);
-        $command = $commands[0];
-        $id = $commands[1];
-        $product = isset($commands[2]) ? $commands[2] : '';
-        $message_id = $query['message']['message_id'];
-        if (in_array($command, ["lang", "confirm", "payment"]))
-            $this->telegram->deleteMessage($query['message']['chat']['id'], $message_id);
-        switch ($command) {
-            case 'lang':
-                $this->setLang($user, $id);
-                break;
-            case "confirm":
-                $this->confirm($user, $id);
-                break;
-            case "payment":
-                $this->payment($user, $id);
-                break;
-            case "addMinute":
-                $this->telegram->minute($message_id, $id, "plus", $product);
-                break;
-            case "addPrice":
-                $this->telegram->price($message_id, $id, "plus", $product);
-                break;
-            case "subPrice":
-                $this->telegram->price($message_id, $id, "minus", $product);
-                break;
-            case "receive":
-                $this->telegram->receive($message_id, $id);
-                break;
-            case "cancel":
-                $this->telegram->cancel($message_id, $id);
-                break;
-            case "posuda":
-                $this->telegram->posuda($message_id, $id, 'set', $product);
-                break;
-            case "addPosuda":
-                $this->telegram->posuda($message_id, $id, 'add', $product);
-                break;
-            case "subPosuda":
-                $this->telegram->posuda($message_id, $id, 'sub', $product);
-                break;
-            case "location":
-                $this->telegram->getLocation($message_id, $id,);
-                break;
-            case "cancelSite":
-                $this->telegram->cancelSite($message_id, $id, "cancel");
-                break;
-            case "receiveSite":
-                $this->telegram->cancelSite($message_id, $id, $product);
-                break;
-        }
-    }
+
 
     public function payment($user, $id)
     {
@@ -301,6 +311,13 @@ class OrderService
     {
         $text = "Ismingizni kiriting";
         $user->status_id = Status::GET[Status::NAME];
+        $user->save();
+        $this->telegram->sendMessage($user->telegram_id, $text);
+    }
+    public function askNameForChange($user)
+    {
+        $text = "Ismingizni kiriting";
+        $user->status_id = Status::GET[Status::ASK_NAME];
         $user->save();
         $this->telegram->sendMessage($user->telegram_id, $text);
     }
