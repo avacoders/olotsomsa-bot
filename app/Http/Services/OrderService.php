@@ -228,8 +228,10 @@ class OrderService
                 $user->save();
                 $text = lang("uz", 'your_address') . ": $location1->text \n\n";
                 $text .= lang("uz", 'correct_address');
-
-                $this->telegram->sendMessage($user->telegram_id, $text);
+                $buttons = [
+                    "remove_keyboard" => true
+                ];
+                $this->telegram->sendButtons($user->telegram_id, $text, $buttons);
             } else {
                 $this->sendMenu($user);
             }
