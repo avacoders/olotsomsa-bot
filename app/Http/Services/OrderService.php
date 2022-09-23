@@ -143,7 +143,7 @@ class OrderService
             $order->comment = $message;
             $order->save();
             $this->checkOrder($user);
-        }else{
+        } else {
             $this->sendMenu($user);
         }
     }
@@ -212,8 +212,43 @@ class OrderService
                 break;
             case "payment":
                 $this->payment($user, $id);
+                break;
+            case "addMinute":
+                $this->telegram->minute($message_id, $id, "plus", $product);
+                break;
+            case "addPrice":
+                $this->telegram->price($message_id, $id, "plus", $product);
+                break;
+            case "subPrice":
+                $this->telegram->price($message_id, $id, "minus", $product);
+                break;
+            case "receive":
+                $this->telegram->receive($message_id, $id);
+                break;
+            case "cancel":
+                $this->telegram->cancel($message_id, $id);
+                break;
+            case "posuda":
+                $this->telegram->posuda($message_id, $id, 'set', $product);
+                break;
+            case "addPosuda":
+                $this->telegram->posuda($message_id, $id, 'add', $product);
+                break;
+            case "subPosuda":
+                $this->telegram->posuda($message_id, $id, 'sub', $product);
+                break;
+            case "location":
+                $this->telegram->getLocation( $message_id, $id,);
+                break;
+            case "cancelSite":
+                $this->telegram->cancelSite( $message_id, $id,"cancel");
+                break;
+            case "receiveSite":
+                $this->telegram->cancelSite( $message_id, $id,$product);
+                break;
         }
     }
+
     public function payment($user, $id)
     {
         DB::beginTransaction();
@@ -329,6 +364,7 @@ class OrderService
         }
         return $text;
     }
+
     public function checkOrder($user)
     {
         DB::beginTransaction();
@@ -379,6 +415,7 @@ class OrderService
 
 
     }
+
     public function buttons($order)
     {
 
