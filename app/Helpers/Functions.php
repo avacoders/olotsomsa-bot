@@ -3,6 +3,7 @@
 
 function lang($locale, $key)
 {
+    $locale = $locale ?? "uz";
     $keys = [
         'uz' => [
             "hi" => "TO'LIQ ISMINGIZNI KIRITING",
