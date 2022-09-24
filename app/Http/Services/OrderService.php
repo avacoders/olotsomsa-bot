@@ -25,6 +25,7 @@ class OrderService
     {
         $call_id = isset($data['callback_query']) ? $data['callback_query']['message']['chat']['id'] : '';
         $chat_id = isset($data['message']) ? $data["message"]['chat']['id'] : $call_id;
+        $user = $user ?? $this->telegram->saveData($chat_id);
         if ($message == "/start") {
             if ($user)
                 $this->sendMenu($user);
