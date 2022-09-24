@@ -800,7 +800,7 @@ class Telegram
         $order = Order::find($id);
         $user = $order->user;
 
-        $text = lang($user->language_code, "canceled");
+        $text = lang($user->language_code, "cancelled");
 
         $this->sendMessage($user->telegram_id, $text);
         $this->changeOrderStatus($message_id, $id, Order::STATUS_CANCEL);
