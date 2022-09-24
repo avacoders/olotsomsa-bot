@@ -37,7 +37,7 @@ class OrderService
             $this->telegram->settings($user);
             return 1;
         }
-        $this->answerByStatus($user, $message);
+        $this->answerByStatus($user, $message, $data);
 
     }
 
@@ -111,8 +111,9 @@ class OrderService
         }
     }
 
-    public function answerByStatus($user, $message)
+    public function answerByStatus($user, $message, $data)
     {
+        $user = $user ?? $this->telegram->saveData($data);
         switch ($user->status_id) {
             case Status::GET[Status::NAME]:
                 $this->setNameAndContinue($user, $message);
