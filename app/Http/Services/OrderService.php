@@ -270,7 +270,7 @@ class OrderService
         $buttons = [
             'inline_keyboard' => [
                 [
-                    ["text" => lang($user->language_code, "menu1"),
+                    ["text" => lang($user->language_code??"uz", "menu1"),
                         "web_app" => [
                             "url" => "https://telegram.olotsomsa.com/bot/app"
                         ]
@@ -409,7 +409,7 @@ class OrderService
         $user->status_id = Status::GET[Status::LOCATION_SELECT];
         $user->save();
         $location = [
-            'text' => lang("$user->language_code", 'geolocation'),
+            'text' => lang($user->language_code, 'geolocation'),
             'request_location' => true
         ];
         $buttons = [
