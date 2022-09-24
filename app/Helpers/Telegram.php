@@ -1123,7 +1123,7 @@ class Telegram
         return $text;
     }
 
-    public function     makeText($order)
+    public function  makeText($order)
     {
 
         $user = $order->user;
