@@ -417,7 +417,7 @@ class OrderService
             'resize_keyboard' => true,
         ];
         $buttons['keyboard'][] = [$location];
-        Log::debug($this->telegram->sendMessageWithButtons($user->telegram_id, lang($user->language_code, 'location_text'), json_encode($buttons)));
+        $this->telegram->sendMessageWithButtons($user->telegram_id, lang($user->language_code, 'location_text'), json_encode($buttons));
     }
 
 

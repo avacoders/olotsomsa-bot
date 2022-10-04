@@ -123,7 +123,6 @@ class Telegram
             ]);
             foreach ($request->orders as $key => $item) {
                 if (isset($item['quantity']) && $item['quantity']) {
-                    Log::debug(Product::find($key));
                     $order_product = [
                         'product_id' => (int)$key,
                         'order_id' => $order->id,
@@ -661,7 +660,6 @@ class Telegram
     {
         DB::beginTransaction();
         try {
-            Log::debug($user);
             if ($user) {
                 if ($user->status_id == Status::GET[Status::COMMENT]) {
                     $order = $user->orders()->where('status_id', Order::STATUS_NEW)->latest()->first();
@@ -1182,10 +1180,8 @@ class Telegram
         $contact = preg_replace('/[^0-9.]+/', '', $phone_number);
         $code5 =  substr($contact, 0, 5);
         $code5 = preg_replace('/[^0-9.]+/', '', $code5);
-        Log::debug($contact);
 
         if (strlen($contact) != 12 || !in_array($code5, [99890, 99891, 99893, 99894, 99895, 99897, 99899]) || $code5 == 99898) {
-            Log::debug(strlen($contact));
 
             $this->sendMessage($user->telegram_id, "Iltimos, telefon raqamni to'g'ri kiriting! Masalan: 9989012345678");
             $this->sendContactRequest($user);
