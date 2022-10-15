@@ -373,7 +373,7 @@ class OrderService
 
     public function askPhoneForChange($user)
     {
-        $text = lang($user->language_code, 'ask_phone1')." \n\n".lang($user->language_code, 'ask_phone2')." \n\n998903911755";
+        $text = lang($user->language_code, 'ask_phone1')." \n\n".lang($user->language_code, 'ask_phone2')." \n\n998901234567";
         $user->status_id = Status::GET[Status::ASK_PHONE];
         $user->save();
         $contact = [
@@ -390,7 +390,7 @@ class OrderService
 
     public function askPhone($user)
     {
-        $text = lang($user->language_code, 'ask_phone1')." \n\n".lang($user->language_code, 'ask_phone2')." \n\n998903911755";
+        $text = lang($user->language_code, 'ask_phone1')." \n\n".lang($user->language_code, 'ask_phone2')." \n\n998901234567";
         $user->status_id = Status::GET[Status::PHONE_NUMBER];
         $user->save();
         $contact = [
