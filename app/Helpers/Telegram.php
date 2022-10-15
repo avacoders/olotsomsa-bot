@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Napa\R19\Sms;
+use Carbon\Carbon;
 
 class Telegram
 {
@@ -38,10 +39,10 @@ class Telegram
 
     public function settings($user)
     {
-        $text = "🔧 ".lang($user->language_code,"settings")." \n\n";
-        $text .= "👤 ".lang($user->language_code, "name").": " . $user->name . "\n";
-        $text .= "📞 ".lang($user->language_code, "telefon").": " . $user->phone_number . "\n" ?? "No'malum" . "\n";
-        $text .= "🔄 ".lang($user->language_code, "til").": " . $user->lang . "\n";
+        $text = "🔧 " . lang($user->language_code, "settings") . " \n\n";
+        $text .= "👤 " . lang($user->language_code, "name") . ": " . $user->name . "\n";
+        $text .= "📞 " . lang($user->language_code, "telefon") . ": " . $user->phone_number . "\n" ?? "No'malum" . "\n";
+        $text .= "🔄 " . lang($user->language_code, "til") . ": " . $user->lang . "\n";
         $text .= "🆔 ID: " . $user->telegram_id . "\n";
         $user->status_id = Status::GET[Status::NORMAL];
         $user->save();
@@ -50,25 +51,25 @@ class Telegram
             "inline_keyboard" => [
                 [
                     [
-                        "text" => "📝 ".lang($user->language_code, "change_til"),
+                        "text" => "📝 " . lang($user->language_code, "change_til"),
                         "callback_data" => "change_lang"
                     ]
                 ],
                 [
                     [
-                        "text" => "📝 ".lang($user->language_code, "change_phone"),
+                        "text" => "📝 " . lang($user->language_code, "change_phone"),
                         "callback_data" => "phone"
                     ]
                 ],
                 [
                     [
-                        "text" => "📝 ".lang($user->language_code, "change_name"),
+                        "text" => "📝 " . lang($user->language_code, "change_name"),
                         "callback_data" => "name"
                     ]
                 ],
                 [
                     [
-                        "text" => "🗒 ".lang($user->language_code, "history"),
+                        "text" => "🗒 " . lang($user->language_code, "history"),
                         "callback_data" => "history"
                     ]
                 ]
@@ -115,61 +116,65 @@ class Telegram
         DB::beginTransaction();
 
         $user = User::where('telegram_id', $request->user['id'])->first();
-        try {
-            $order = Order::create([
-                'user_id' => $user->id,
-                'status_id' => Order::STATUS_NEW,
-                'type' => 0
-            ]);
-            foreach ($request->orders as $key => $item) {
-                if (isset($item['quantity']) && $item['quantity']) {
-                    $order_product = [
-                        'product_id' => (int)$key,
-                        'order_id' => $order->id,
-                        'status_id' => OrderProduct::STATUS_BASKET,
-                        'quantity' => $item['quantity'],
-                    ];
-                    OrderProduct::create($order_product);
-                }
-
-            }
-
-
-            $order_products = $order->order_products()->where('status_id', OrderProduct::STATUS_BASKET)->get();
-
-            if (count($order_products)) {
-                $text = "";
-
-                $sum = 0;
-                $price = 1;
-                foreach ($order_products as $product) {
-                    $price = $product->product->price * $product->quantity;
-                    $sum += $price;
-                    $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
-                }
-
-                $text .= "\n $sum so'm \n";
-
-                $buttons = [
-                    'inline_keyboard' => []
-                ];
-                $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|' . $order->id);
-                $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
-            } else {
-                $this->sendMessage($user->telegram_id, lang('uz', 'empty'));
-            }
-
-            DB::commit();
+        $start = Carbon::createFromTimeString(explode(config("bots.opening_hours"))[0]);
+        $end = Carbon::createFromTimeString(explode(config("bots.opening_hours"))[1]);
+        $now = Carbon::now();
+        if (!$now->between($start, $end)) {
+            $user->status_id = Status::GET[Status::NORMAL];
+            $user->save();
+            $text = lang($user->language_code,"working_hours");
+            $this->sendMessage($user->telegram_id, $text);
             return response()->json(['ok' => true]);
-        } catch (\Exception $exception) {
+        } else {
+            try {
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'status_id' => Order::STATUS_NEW,
+                    'type' => 0
+                ]);
+                foreach ($request->orders as $key => $item) {
+                    if (isset($item['quantity']) && $item['quantity']) {
+                        $order_product = [
+                            'product_id' => (int)$key,
+                            'order_id' => $order->id,
+                            'status_id' => OrderProduct::STATUS_BASKET,
+                            'quantity' => $item['quantity'],
+                        ];
+                        OrderProduct::create($order_product);
+                    }
+                }
+                $order_products = $order->order_products()->where('status_id', OrderProduct::STATUS_BASKET)->get();
+                if (count($order_products)) {
+                    $text = "";
+
+                    $sum = 0;
+                    $price = 1;
+                    foreach ($order_products as $product) {
+                        $price = $product->product->price * $product->quantity;
+                        $sum += $price;
+                        $text .= "\t <b>" . $product->product->name . "</b>  $product->quantity x " . $product->product->price . " = " . $price . " so'm \n";
+                    }
+
+                    $text .= "\n $sum so'm \n";
+
+                    $buttons = [
+                        'inline_keyboard' => []
+                    ];
+                    $buttons['inline_keyboard'][] = $this->makeButton(lang('uz', 'confirm'), 'confirm|' . $order->id);
+                    $this->sendButtons($user->telegram_id, $text, json_encode($buttons));
+                } else {
+                    $this->sendMessage($user->telegram_id, lang('uz', 'empty'));
+                }
+
+                DB::commit();
+                return response()->json(['ok' => true]);
+            } catch (\Exception $exception) {
 //            $this->sendMenu($user);
-            Log::debug($exception);
-            DB::rollBack();
-            return response()->json(['ok' => false]);
-
+                Log::debug($exception);
+                DB::rollBack();
+                return response()->json(['ok' => false]);
+            }
         }
-
-
     }
 
     public function checkChatStatus($user, $status)
@@ -654,8 +659,6 @@ class Telegram
     }
 
 
-
-
     public function base($user, $data)
     {
         DB::beginTransaction();
@@ -762,9 +765,9 @@ class Telegram
         $user = $order->user;
 
         if ($order->status_id != Order::STATUS_COMPLETE) {
-            $text = lang($user->language_code,"accepted1")." $order->delivery_minute". lang($user->language_code,"accepted2");
-            $text .= "\n".lang($user->language_code,"delivery")." <b>$order->delivery_price 💵</b>\n";
-            $text .= "\n".lang($user->language_code,"idish")."  <b><i>$order->posuda</i></b> 💵 \n";
+            $text = lang($user->language_code, "accepted1") . " $order->delivery_minute" . lang($user->language_code, "accepted2");
+            $text .= "\n" . lang($user->language_code, "delivery") . " <b>$order->delivery_price 💵</b>\n";
+            $text .= "\n" . lang($user->language_code, "idish") . "  <b><i>$order->posuda</i></b> 💵 \n";
             $order_product = OrderProduct::query()
                 ->where('order_id', $order->id)
                 ->where('status_id', OrderProduct::STATUS_BASKET)->get();
@@ -781,9 +784,9 @@ class Telegram
 
                 $sum += $order->delivery_price;
                 $sum += $order->posuda;
-                $text .= "\n<b>".lang($user->language_code,"general")."</b>: $sum 💵";
+                $text .= "\n<b>" . lang($user->language_code, "general") . "</b>: $sum 💵";
                 $text .= "\n<b>☎️</b>: $user->phone_number";
-                $text .= "\n<b>".lang($user->language_code,"comment")."</b>: $order->comment";
+                $text .= "\n<b>" . lang($user->language_code, "comment") . "</b>: $order->comment";
 
                 $this->sendMessage($user->telegram_id, $text);
                 $this->changeOrderStatus($message_id, $id, Order::STATUS_COMPLETE);
@@ -812,7 +815,7 @@ class Telegram
             $text = "Buyurtmangiz bekor qilindi!\nSabab: Biz ish vaqtida emasmiz. Iltimos keyinroq urinib ko'ring";
             $status = Order::STATUS_CANCEL;
         } else {
-            $text = lang($user->language_code, "accepted1")." $order->delivery_minute ".lang($user->language_code, "accepted2") ;
+            $text = lang($user->language_code, "accepted1") . " $order->delivery_minute " . lang($user->language_code, "accepted2");
             $status = Order::STATUS_COMPLETE;
         }
 
@@ -1121,7 +1124,7 @@ class Telegram
         return $text;
     }
 
-    public function  makeText($order)
+    public function makeText($order)
     {
 
         $user = $order->user;
@@ -1178,7 +1181,7 @@ class Telegram
     public function validatePhoneNumber($user, $phone_number)
     {
         $contact = preg_replace('/[^0-9.]+/', '', $phone_number);
-        $code5 =  substr($contact, 0, 5);
+        $code5 = substr($contact, 0, 5);
         $code5 = preg_replace('/[^0-9.]+/', '', $code5);
 
         if (strlen($contact) != 12 || !in_array($code5, [99890, 99891, 99893, 99894, 99895, 99897, 99899]) || $code5 == 99898) {
