@@ -123,7 +123,7 @@ class Telegram
         if (!$now->between($start, $end)) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
-            $text = lang($user->language_code,"working_hours");
+            $text = lang("uz","working_hours");
             $this->sendMessage($user->telegram_id, $text);
             return response()->json(['ok' => true]);
         } else {
