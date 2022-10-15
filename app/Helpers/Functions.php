@@ -185,7 +185,8 @@ function lang($locale, $key)
             "cancelled" => "Ваш заказ отменен",
             "umumiy" => "Всего",
             "dostavka" => "ДОСТАВКА",
-            "idish" => "POSUDA", 4
+            "idish" => "POSUDA", 4,
+            "working_hours" => "В настоящее время наш магазин не принимает заказы. Наши рабочие часы: ".config("bots.opening_hours"),
         ]
     ];
     return $keys[$locale][$key];
