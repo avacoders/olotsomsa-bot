@@ -116,8 +116,8 @@ class Telegram
         DB::beginTransaction();
 
         $user = User::where('telegram_id', $request->user['id'])->first();
-        $start = Carbon::createFromTimeString(explode(config("bots.opening_hours"))[0]);
-        $end = Carbon::createFromTimeString(explode(config("bots.opening_hours"))[1]);
+        $start = Carbon::createFromTimeString(explode("-",config("bots.opening_hours"))[0]);
+        $end = Carbon::createFromTimeString(explode("-",config("bots.opening_hours"))[1]);
         $now = Carbon::now();
         if (!$now->between($start, $end)) {
             $user->status_id = Status::GET[Status::NORMAL];

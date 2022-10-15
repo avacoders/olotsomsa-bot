@@ -62,7 +62,7 @@ function lang($locale, $key)
             "cancelled" => "Buyurtmangiz bekor qilindi",
             "dostavka" => "YETKAZIB BERISH",
             "idish" => "POSUDA",
-            "working_hours" => "AFSUSKI, AYNI VAQTDA BUYURTMA BERISH IMKONI YO'Q. ILTIMOS, ".explode(config("bots.opening_hours"))[0]." DAN ".explode(config("bots.opening_hours"))[1]." GACHA BUYURTMA BERING!",
+            "working_hours" => "AFSUSKI, AYNI VAQTDA BUYURTMA BERISH IMKONI YO'Q. ILTIMOS, ".explode("-",config("bots.opening_hours"))[0]." DAN ".explode("-",config("bots.opening_hours"))[1]." GACHA BUYURTMA BERING!",
         ],
         'ru' => [
             "hi" => "ВВЕДИТЕ СВОЕ ПОЛНОЕ ИМЯ",
