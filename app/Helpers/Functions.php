@@ -122,6 +122,7 @@ function lang($locale, $key)
             "umumiy" => "Всего",
             "dostavka" => "ДОСТАВКА",
             "idish" => "POSUDA",
+            "working_hours" => "В настоящее время наш магазин не принимает заказы. Наши рабочие часы: ".config("bots.opening_hours"),
 
         ],
         'en' => [
