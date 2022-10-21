@@ -1161,6 +1161,8 @@ class Telegram
             $type = Order::GET_TYPE[$order->type];
             $text .= "\nТЎЛОВ ТУРИ:  $type";
             $text .= "\n\nЖАМИ СУММА: $sum</b>";
+            $text .= "\nЗАКАЗ:  ТЕЛЕГРАМ БОТ";
+
         }
         return $text;
     }
