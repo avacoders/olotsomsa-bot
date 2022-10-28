@@ -240,7 +240,7 @@
         function changeMainBtn() {
             var color = selected.length > 1 ? "#37D200" : "rgb(255, 193, 7)"
             mainBtn.setParams({
-                "text": "Umumiy " + calculate() + " so'm",
+                "text": "Buyurtma berish " + calculate() + " so'm",
                 "color": color,
                 "text_color": "#FFFFFF",
 
