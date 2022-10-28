@@ -178,7 +178,7 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="{{ asset("js/axios.js") }}"></script>
 
 <script>
     var domain = "https://olotsomsa.com";
@@ -187,6 +187,7 @@
     var products = getProducts()
     var quantity = 1
     var mainBtn = window.Telegram.WebApp.MainButton
+
 
 
     makeProductsUI(products)
