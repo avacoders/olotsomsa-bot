@@ -249,7 +249,7 @@
 
         mainBtn.show()
         mainBtn.setParams({
-            "text": "Umumiy " + calculate() + " So'm",
+            "text": "Buyurtma berish  " + calculate() + " So'm",
             "color": "rgb(255, 193, 7)",
             "text_color": "#FFFFFF",
 
