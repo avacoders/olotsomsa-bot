@@ -298,7 +298,7 @@
             if (selected.length > 0) {
                 axios.post('/api/bot', {
                     query_id: window.Telegram.WebApp.initDataUnsafe.query_id,
-                    user: {id: 1322193369},
+                    user: window.Telegram.WebApp.initDataUnsafe.user,
                     orders: selected
                 }).then(response => {
                     if (response.data.ok) window.Telegram.WebApp.close()
