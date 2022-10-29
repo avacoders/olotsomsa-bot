@@ -42,7 +42,7 @@ function lang($locale, $key)
             "sam" => "🏃‍♂️ Olib ketish",
             "select_type" => "Yetkazib berish usulini tanlang",
             "geolocation" => "📍 Geolokatsiyani jo’natish 📍 ",
-            "location_text" => 'Iltimos, “📍 Geolokatsiyani jo’natish” tugmasini bosish orqali geolokatsiyangizni yuboring. Bunda telefoningizda manzilni aniqlash funksiyasi yoqilgan bo’lishi lozim."',
+            "location_text" => 'Iltimos, “📍 Geolokatsiyani jo’natish 📍 ” tugmasini bosish orqali geolokatsiyangizni yuboring. Bunda telefoningizda manzilni aniqlash funksiyasi yoqilgan bo’lishi lozim."',
             "re_location" => "📍 Geolatsiyani qayta jo'natish",
             "your_address" => "Sizning manzilingiz",
             "correct_address" => "HURMATLI MIJOZ! ILTIMOS, YASHASH MANZILINGIZNI YOZMA RAVISHDA ANIQ VA TO'G'RI YOZING !",

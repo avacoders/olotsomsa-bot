@@ -116,13 +116,13 @@ class Telegram
         DB::beginTransaction();
 
         $user = User::where('telegram_id', $request->user['id'])->first();
-        $start = Carbon::createFromTimeString(explode("-",config("bots.opening_hours"))[0]);
-        $end = Carbon::createFromTimeString(explode("-",config("bots.opening_hours"))[1]);
+        $start = Carbon::createFromTimeString(explode("-", config("bots.opening_hours"))[0]);
+        $end = Carbon::createFromTimeString(explode("-", config("bots.opening_hours"))[1]);
         $now = Carbon::now();
         if (!$now->between($start, $end)) {
             $user->status_id = Status::GET[Status::NORMAL];
             $user->save();
-            $text = lang($user->language_code,"working_hours");
+            $text = lang($user->language_code, "working_hours");
             $this->sendMessage($user->telegram_id, $text);
             return response()->json(['ok' => true]);
         } else {
@@ -132,16 +132,15 @@ class Telegram
                     'status_id' => Order::STATUS_NEW,
                     'type' => 0
                 ]);
-                foreach ($request->orders as $key => $item) {
-                    if (isset($item['quantity']) && $item['quantity']) {
-                        $order_product = [
-                            'product_id' => (int)$key,
-                            'order_id' => $order->id,
-                            'status_id' => OrderProduct::STATUS_BASKET,
-                            'quantity' => $item['quantity'],
-                        ];
-                        OrderProduct::create($order_product);
-                    }
+                foreach ($request->orders as $item) {
+                    $order_product = [
+                        'product_id' => $item['id'],
+                        'order_id' => $order->id,
+                        'status_id' => OrderProduct::STATUS_BASKET,
+                        'quantity' => $item['quantity'],
+                    ];
+                    OrderProduct::create($order_product);
+
                 }
                 $order_products = $order->order_products()->where('status_id', OrderProduct::STATUS_BASKET)->get();
                 if (count($order_products)) {

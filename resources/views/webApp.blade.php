@@ -102,6 +102,9 @@
             background-color: transparent;
             font-size: 30px;
             border: 0;
+            display:table-cell;
+            vertical-align:middle;
+            text-align:center;
         }
 
         .fade .modal-content {
@@ -115,15 +118,60 @@
             transform: scale(1);
         }
 
+        .chip {
+            width: 100%;
+            display: inline-block;
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            border-radius: 12px;
+            background-color: rgb(255, 193, 7);
+            color: white;
+            font-weight: bold;
+        }
+
+        .bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #182533;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .mainBtn {
+            background-color: #37D200;
+            color: white;
+            border: 0;
+            border-radius: 12px;
+            font-weight: bold;
+            width: 100%;
+            font-size: 20px;
+            height: 50px;
+            line-height: 50px;
+        }
     </style>
 
 </head>
 <body>
 
 
-<div class="container">
-    <div class="row justify-content-center" id="products">
+<div class="container ">
+    <div class="row justify-content-center" style="margin-bottom: 100px" id="products">
 
+    </div>
+    <div class="bottom">
+        <div class="row">
+            <div class="col-6 pr-1">
+                <div class="chip" id="summa">0 so'm</div>
+            </div>
+            <div class="col-6 pl-1">
+                <div class="mainBtn" id="mainBtn">Buyurtma berish</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -166,26 +214,38 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="no-product" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content custom-content    ">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Mahsulotlarni tanlang!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="{{ asset("js/jquery.js") }}"></script>
 
-<script src="{{ asset("js/popper.js") }}"></script>
-<script src="{{ asset("js/bootstrap.js") }}"></script>
+<script src="{{ asset("js/popper.min.js") }}"></script>
+<script src="{{ asset("js/bootstrap.min.js") }}"></script>
 <script src="{{ asset("js/aos.js") }}"></script>
 
-<script src="{{ asset("js/axios.js") }}"></script>
+<script src="{{ asset("js/axios.min.js") }}"></script>
 
 <script>
     AOS.init();
-    $(document).ready(function() {
+    var domain = "https://olotsomsa.com";
+    var selecting = null
+    var selected = []
+    var products = getProducts()
+    var quantity = 1
+    var mainBtn = window.Telegram.WebApp.MainButton
 
-        var domain = "https://olotsomsa.com";
-        var selecting = null
-        var selected = []
-        var products = getProducts()
-        var quantity = 1
-        var mainBtn = window.Telegram.WebApp.MainButton
-
+    $(document).ready(function () {
 
         makeProductsUI(products)
 
@@ -193,130 +253,78 @@
             var div = ""
             var item = false
             var btnClass
+            var price = 0
             for (let i = 0; i < products.length; i++) {
                 item = products[i]
-                btnClass = selected[item.id] ? "btn-warning" : "btn-success"
-                btnText = selected[item.id] ? "OLIB TASHLASH" : "QO'SHISH";
+                btnClass = getSelectedByID([item.id]) ? "btn-warning" : "btn-success"
+                btnText = getSelectedByID(item.id) ? "OLIB TASHLASH" : "QO'SHISH";
+                price = numberWithCommas(item.price)
 
                 div += '<div class="col-4 position-relative">'
                 div += '<div class="py-3" style="height: 250px">'
                 div += '<div class="d-none counter" id="counter' + item.id + '">2</div>'
                 div += '<img  data-toggle="modal" data-target="#exampleModal" data-id="' + item.id + '"  src="' + item.image + '" class="product-img " alt="">'
-                div += '<h6 class="text-center mt-3 mx-auto">' + item.name + ' <br> ' + item.price + ' so\'m</h6>'
+                div += '<h6 class="text-center mt-3 mx-auto">' + item.name + ' <br> ' + price + ' so\'m</h6>'
                 div += '<button   data-toggle="modal" data-target="#exampleModal" data-id="' + item.id + '" id="btn' + item.id + '" class="btn add ' + btnClass + '">'
                 div += "QO'SHISH"
                 div += "</button>"
                 div += '</div>'
                 div += '</div>'
             }
-
-
             $("#products").html(div)
         }
 
         function calculate() {
             sum = 0
             for (let i = 0; i < selected.length; i++) {
-                if (selected[i] && selected[i].quantity)
-                    sum += selected[i].quantity * getProductByID(i).price
+                sum += selected[i].quantity * getProductByID(selected[i].id).price
             }
-            return sum
+            return numberWithCommas(sum)
         }
 
         function changeCounter(id) {
-            $("#counter" + id).toggleClass('d-none')
-            $("#counter" + id).text(selected[id] ? selected[id].quantity : 1)
+            if (getSelectedByID(id))
+                $("#counter" + id).removeClass('d-none')
+            else
+                $("#counter" + id).addClass('d-none')
+            $("#counter" + id).text(getSelectedByID(id) ? getSelectedByID(id).quantity : 1)
         }
-
-        function changeBtn(id) {
-            btnText = selected[id] ? "-" : "QO'SHISH";
-            btnClass = selected[id] ? "btn-warning" : "btn-success"
-            btnClass2 = !selected[id] ? "btn-success" : "btn-warning"
-            $("#btn" + id).text(btnText)
-
-        }
-
 
         function changeMainBtn() {
-            var color = selected.length > 1 ? "#37D200" : "rgb(255, 193, 7)"
-            mainBtn.setParams({
-                "text": "Buyurtma berish " + calculate() + " so'm",
-                "color": color,
-                "text_color": "#FFFFFF",
-
-            })
+            $("#summa").text(calculate() + " so'm")
         }
 
-        mainBtn.show()
-        mainBtn.setParams({
-            "text": "Buyurtma berish  " + calculate() + " So'm",
-            "color": "rgb(255, 193, 7)",
-            "text_color": "#FFFFFF",
-
-        })
-
-        mainBtn.onClick(() => {
-            if (selected.length > 1) {
+        $("#mainBtn").click(function () {
+            if (selected.length > 0) {
                 axios.post('/api/bot', {
                     query_id: window.Telegram.WebApp.initDataUnsafe.query_id,
-                    user: window.Telegram.WebApp.initDataUnsafe.user,
+                    user: {id: 1322193369},
                     orders: selected
+                }).then(response => {
+                    if (response.data.ok) window.Telegram.WebApp.close()
                 })
-                    .then(response => {
-                        if (response.data.ok) window.Telegram.WebApp.close()
-                    })
             }
+            else $("#no-product").modal('show')
 
         })
         $('.add').click(function () {
             selecting = getProductByID($(this).data('id'))
-            if (selecting) {
-                $("#name").text(selecting.name)
-                if (selecting.id == 19) {
-                    quantity = 10
-                    $("#counter").text(10)
-                    $("#general").text(selecting.price * 10)
-
-                } else {
-                    $("#counter").text(1)
-                    $("#general").text(selecting.price)
-
-                }
-
-                $("#image").attr('src', selecting.image)
-                $("#price").text(selecting.price)
-            }
-
+            openModal(selecting)
         })
         $('.product-img').click(function () {
             selecting = getProductByID($(this).data('id'))
-            if (selecting) {
-                $("#name").text(selecting.name)
-                if (selecting.id == 19) {
-                    quantity = 10
-                    $("#counter").text(10)
-                    $("#general").text(selecting.price * 10)
-
-                } else {
-                    $("#counter").text(1)
-                    $("#general").text(selecting.price)
-
-                }
-
-                $("#image").attr('src', selecting.image)
-                $("#price").text(selecting.price)
-            }
-
+            openModal(selecting)
         })
+
 
         $(".btn-plus").click(function () {
             quantity++
             $("#counter").text(quantity)
-            $("#general").text(quantity * selecting.price)
+            $("#general").text(numberWithCommas(quantity * selecting.price))
         })
 
         $(".btn-minus").click(function () {
-            if (quantity > 1)
+            if (quantity >= 1)
                 quantity--
             if (selecting.id == 19) {
                 if (quantity < 10) {
@@ -324,27 +332,32 @@
                 }
             }
             $("#counter").text(quantity)
-            $("#general").text(quantity * selecting.price)
+            $("#general").text(numberWithCommas(quantity * selecting.price))
 
         })
-
         $(".submit").click(function () {
-            selected[selecting.id] = {
-                quantity
-            }
+            if (quantity)
+                if (getSelectedByID(selecting.id))
+                    getSelectedByID(selecting.id).quantity = quantity
+                else
+                    selected.push({
+                        id: selecting.id,
+                        quantity: quantity
+                    })
+            else
+                removeProductFromSelected(selecting.id)
+
             changeCounter(selecting.id)
-            changeBtn(selecting.id)
             changeMainBtn()
+            quantity = 1
+            console.log(selected);
         })
         $(".cancel").click(function () {
-            selected.splice(selecting.id)
-            console.log(selected);
+            removeProductFromSelected(selecting.id)
             changeCounter(selecting.id)
-            changeBtn(selecting.id)
             changeMainBtn()
 
         })
-
 
         function getProductByID(id) {
             for (let i = 0; i < products.length; i++) {
@@ -353,46 +366,88 @@
             }
             return false
         }
-
-
-        function getProducts() {
-            var result = false
-
-            $.ajax({
-                url: domain + "/api/products/",
-                dataType: "json",
-                type: "get",
-                async: false,
-                success: function (data) {
-                    result = data.data
-                },
-                error: function (xhr, exception) {
-                    var msg = "";
-                    if (xhr.status === 0) {
-                        msg = "Not connect.\n Verify Network." + xhr.responseText;
-                    } else if (xhr.status == 404) {
-                        msg = "Requested page not found. [404]" + xhr.responseText;
-                    } else if (xhr.status == 500) {
-                        msg = "Internal Server Error [500]." + xhr.responseText;
-                    } else if (exception === "parsererror") {
-                        msg = "Requested JSON parse failed.";
-                    } else if (exception === "timeout") {
-                        msg = "Time out error." + xhr.responseText;
-                    } else if (exception === "abort") {
-                        msg = "Ajax request aborted.";
-                    } else {
-                        msg = "Error:" + xhr.status + " " + xhr.responseText;
-                    }
-
-                }
-            });
-
-
-            return result
-        }
-
     })
 
+    function getProducts() {
+        var result = false
+        $.ajax({
+            url: domain + "/api/products/",
+            dataType: "json",
+            type: "get",
+            async: false,
+            success: function (data) {
+                result = data.data
+            },
+            error: function (xhr, exception) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network." + xhr.responseText;
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]" + xhr.responseText;
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500]." + xhr.responseText;
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error." + xhr.responseText;
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+            }
+        });
+        return result
+    }
+
+    numberWithCommas = (x) => {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
+    function getSelectedByID(id) {
+        for (var i = 0; i < selected.length; i++) {
+            if (selected[i].id == id) {
+                return selected[i]
+            }
+        }
+        return null
+    }
+
+    function removeProductFromSelected(id) {
+        for (var i = 0; i < selected.length; i++) {
+            if (selected[i].id == id) {
+                selected.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+
+    function openModal(selecting) {
+        quantity = 1
+        if (selecting) {
+            $("#name").text(selecting.name)
+
+            $("#image").attr('src', selecting.image)
+            $("#price").text(numberWithCommas(selecting.price))
+
+            if (getSelectedByID(selecting.id)) {
+                quantity = getSelectedByID(selecting.id).quantity
+                $("#counter").text(quantity)
+                $("#general").text(numberWithCommas(quantity * selecting.price))
+            } else {
+                if (selecting.id == 19) {
+                    quantity = 10
+                    $("#counter").text(10)
+                    $("#general").text(numberWithCommas(selecting.price * 10))
+
+                } else {
+                    $("#counter").text(1)
+                    $("#general").text(numberWithCommas(selecting.price))
+                }
+            }
+        }
+    }
 
 </script>
 </body>
