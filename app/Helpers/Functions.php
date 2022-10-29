@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Log;
 function lang($locale, $key)
 {
     $locale = in_array($locale, ['ru', 'uz']) ? $locale : 'ru';
-    Log::debug($locale);
     $keys = [
         'uz' => [
             "hi" => "TO'LIQ ISMINGIZNI KIRITING",
