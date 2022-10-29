@@ -261,7 +261,7 @@
                 btnText = getSelectedByID(item.id) ? "OLIB TASHLASH" : "QO'SHISH";
                 price = numberWithCommas(item.price)
 
-                div += '<div class="col-4 position-relative">'
+                div += '<div data-aos="fade-down" class="col-4 position-relative">'
                 div += '<div class="py-3" style="height: 250px">'
                 div += '<div class="d-none counter" id="counter' + item.id + '">2</div>'
                 div += '<img  data-toggle="modal" data-target="#exampleModal" data-id="' + item.id + '"  src="' + item.image + '" class="product-img " alt="">'
@@ -273,6 +273,7 @@
                 div += '</div>'
             }
             $("#products").html(div)
+            AOS.init();
         }
 
         function calculate() {
