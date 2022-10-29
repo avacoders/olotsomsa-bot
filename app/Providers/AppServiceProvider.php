@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        URL::forceScheme('https');
+//        URL::forceScheme('https');
         Schema::defaultStringLength(191);
         Paginator::useBootstrap();
         Passport::routes(); // Add this

@@ -132,10 +132,9 @@
 
         .bottom {
             position: fixed;
-            bottom: 0;
             left: 0;
             right: 0;
-            background-color: #182533;
+            background-color: #24303e;
             color: white;
             padding: 10px;
             text-align: center;
@@ -152,6 +151,7 @@
             font-size: 20px;
             height: 50px;
             line-height: 50px;
+            cursor: pointer;
         }
     </style>
 
@@ -246,6 +246,9 @@
     var mainBtn = window.Telegram.WebApp.MainButton
 
     $(document).ready(function () {
+
+        var height = $(window).height() - 70;
+        $(".bottom").css("top", height)
 
         makeProductsUI(products)
 
