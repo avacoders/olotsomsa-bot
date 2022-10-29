@@ -246,7 +246,7 @@
     var quantity = 1
     var mainBtn = window.Telegram.WebApp.MainButton
 
-    $(doument).ready(function () {
+    $(document).ready(function () {
 
         makeProductsUI(products)
 
