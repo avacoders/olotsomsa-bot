@@ -245,10 +245,7 @@
     var quantity = 1
     var mainBtn = window.Telegram.WebApp.MainButton
 
-    $(document).ready(function () {
-
-        var height = $(window).height() - 70;
-        $(".bottom").css("top", height)
+    $(doument).ready(function () {
 
         makeProductsUI(products)
 
